@@ -31,12 +31,17 @@ public class GatoTeste {
         instancia_2.nome = "Happy";
         instancia_3.nome = "Garfield";
 
+        //Criando um array com os objetos para conseguir iterar em cima deles
+        Gato []array_objetos = {instancia_1, instancia_2, instancia_3};
+
         //impressão dos atributos no console
         System.out.println("Imprimindo atributos dos Gatos...\n");
-        System.out.println("Nome: " + instancia_1.nome);
-        System.out.println("Idade: " + instancia_1.idade + " anos");
-        System.out.println("Cor: " + instancia_1.cor);
-        System.out.println("Está vivo? " + (instancia_1.vivo ? "Sim" : "Não")); //operador ternário para realizar a verificação semelhante a um if...else
-
+        for(int i = 0; i < 3; i++) {
+            System.out.println("Nome: " + array_objetos[i].nome);
+            System.out.println("Idade: " + array_objetos[i].idade + " anos");
+            System.out.println("Cor: " + array_objetos[i].cor);
+            System.out.println("Está vivo? " + (array_objetos[i].vivo ? "Sim" : "Não")); //operador ternário para realizar a verificação semelhante a um if...else
+            System.out.println(""); //essa chamada já realiza uma quebra de linha de forma automática!
+        }
     }
-}
+}     
