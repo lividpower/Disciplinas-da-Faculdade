@@ -1,0 +1,18 @@
+Modos de abertura do arquivo: 
+
+r -> Abre o arquivo em formato de texto (.txt) com permissão de leitura. O cursor de leitura é posicionado no início do arquivo. Caso o arquivo que esteja sendo lido não é um arquivo texto e o sistema que você está utilizando realiza essa diferenciação, existem outros modos mais adequados para realizar essa leitura.
+
+w -> Se o arquivo com o nome especificado já existir, esse irá ser sobrescrito, sendo inicializado com tamanho 0 e com permissão apenas de escrita. Caso o arquivo especificado não exista, um arquivo texto é criado com apenas permissão de escrita. O cursor de escrita é posicionado no início do arquivo.
+
+a -> O arquivo é aberto com permissão de escrita apenas no final do arquivo, logo, o cursor de escrita é inicializado ao final do arquivo e, mesmo que o cursor seja reposicionado com fseek(), as operações de escrita apenas poderão ocorrer ao final do arquivo. Se o arquivo de nome especificado não existir, ele será então criado com as mesmas permissões descritas anteriormente.
+
+a+ -> O arquivo é aberto com permissão de leitura dentro de todo o arquivo, porém, com permissão de escrita apenas no final do arquivo. Caso o arquivo de nome especificado não exista, um novo arquivo é criado com as mesmas permissões descritas anteriormente.
+
+r+ -> Abre o arquivo com permissão de leitura e escrita. O cursor de leitura/escrita é posicionado no início do arquivo.
+
+w+ -> Abre o arquivo com permissão de leitura e escrita. Se o arquivo de nome especificado não existir, então um novo é criado com as mesmas permissões descritas anteriormente. Se um arquivo já existir, o conteúdo do arquivo será truncado, assim como no modo de operação "w". O cursor de leitura/escrita é posicionado no início do arquivo. 
+
+r+b ->  Abre o arquivo em formato binário com permissão de leitura e escrita. O cursor de leitura/escrita é posicionado no início do arquivo.
+
+rb-> Abre o arquivo em formato binário com permissão de leitura. O cursor de leitura é posicionado no início do arquivo.
+

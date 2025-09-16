@@ -1,14 +1,18 @@
 import java.util.Scanner;
 
 public class TurmaAlunos {
-    public static double CalculaMedia(Aluno []turma) {
-        
+
+    public static double calculaMedia(Aluno []turma) { //métodos começam com letra minúscula (boas práticas de programação)
+        double acumulador = 0;
+        for(int i = 0; i < turma.length; i++) {
+            acumulador += turma[i].media;
+        }
+        return (acumulador / turma.length); 
     }
 
     public static void main(String []args) {
 
         //declarações iniciais
-        double acumulador = 0;
         Aluno []turma = new Aluno[3];
         for(int i = 0; i < turma.length; i++) { //essa variável "i" foi declarada internamente a função for(), portanto, ela não poderá ser utilizada fora desse for()
             turma[i] = new Aluno();
@@ -24,9 +28,10 @@ public class TurmaAlunos {
             turma[i].media = scanner.nextDouble(); //quando eu uso desse método, ele lê um double, porém, o buffer de leitura armazena também o \n referente a tecla Enter
             //esse \n não é lido pela função nextDouble() e daí a próxima chamada a nextLine() irá acabar lendo esse caractere!
             //quando eu crio um objeto "scanner" a cada iteração, eu estou evitando que isso aconteça, porém, estou criando um overhead apenas conseguir fugir desse bug
-            acumulador += turma[i].media;
             System.out.println("");
         }
-        System.out.println("Média da turma: " + (acumulador / turma.length));
+        double media = calculaMedia(turma);
+        System.out.println("Média da turma: " + media);
+
     }
 }

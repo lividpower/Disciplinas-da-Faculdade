@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
         }
         fclose(file_pointer);
         printf("\nNúmero de linhas do arquivo: %d\n", qtd_linhas); // \n equivale a posição 10 na tabela ASCII
-        printf("-------------------------------");
+        printf("-------------------------------\n");
         for(int j = 0; j < MAX_BYTES; j++) {
             printf("Caractere ASCII de n°: %d\n", j); //caracteres ASCII indo de 0 a 255
             printf("Numéro de ocorrências: %d\n", (array[j] == -1) ? 0 : array[j]);
