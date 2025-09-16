@@ -28,7 +28,7 @@ int main(int argc, char**argv)
 		fprintf(stderr, "USO: %s [CEP]\n", argv[0]);
 		return 1;
 	}
-
+   
 	c = 0;
 	printf("Tamanho da Estrutura: %ld\n\n", sizeof(Endereco)); //%ld é utilizado para variáveis do tipo "long int" que podem possuir de 32 até 64 bits
 	f = fopen("cep.dat","rb"); //como sabemos que o arquivo .dat pode não é necessariamente formatado como um arquivo texto, é mais seguro abrí-lo em formato binário
