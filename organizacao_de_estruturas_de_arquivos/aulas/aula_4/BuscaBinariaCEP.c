@@ -5,7 +5,8 @@ typedef struct _Endereco Endereco;
 
 struct _Endereco
 {	//todos esses caracteres juntos formam uma linha com 300 caracteres, justamente igual ao padrão presente dentro do arquivo cep.dat
-	char logradouro[72];
+	//mas e os caracteres nulos ??? onde que eles entram???
+	char logradouro[72]; 
 	char bairro[72];
 	char cidade[72];
 	char uf[72];
@@ -65,6 +66,7 @@ int main(int argc, char**argv)
 			inicio = meio + 1;
 			meio = (inicio + fim) / 2;
 		}
+		printf("flag\n"); //como esse código acaba entrando em um looping e nunca é encerrado, é necessário usar do \n para forçar a escrita na tela
 		fseek(f, meio, SEEK_SET); 
 		qt = fread(&e,sizeof(Endereco),1,f);		
 	}
