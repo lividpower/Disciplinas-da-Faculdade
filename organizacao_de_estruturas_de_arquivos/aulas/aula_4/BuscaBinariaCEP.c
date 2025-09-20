@@ -35,26 +35,28 @@ int main(int argc, char**argv)
 
 	//inicializando as variáveis da busca binária
 	fseek(f, 0, SEEK_SET);
-	inicio = ftell(f);
+	inicio = ftell(f) / sizeof(Endereco); //divide-se tanto o início e o fim pelo tamanho da struct para que possamos ir pulando de estrutura para outra estrutura por meio da indexação
 	if(inicio == -1) {
 		fprintf(stderr, "Erro na função ftell()\n");
 	}
 	fseek(f, 0, SEEK_END);
-	fim = ftell(f) - 1; //como iremos trabalhar com indexação, precisamos subtrair 1 para conseguir manipular posteriormente os indíces das strings
+	fim = (ftell(f) - 1) / sizeof(Endereco); //como iremos trabalhar com indexação, precisamos subtrair 1 para conseguir manipular posteriormente os indíces das strings
 	if(fim == -1) {
 		fprintf(stderr, "Erro na função ftell()\n");
-
 	}
-	meio = (inicio + fim) / 2; //dúvida em relação ao posicionamento dentro do array
-	fseek(f, meio, SEEK_SET);
+	meio = (inicio + fim) / 2; 
+	fseek(f, (meio * sizeof(Endereco)), SEEK_SET); // se não multiplicamos meio por sizeof(Endereco), iremos acabar acessando uma região no arquivo que será de outra estrutura e não queremos isso!
 	qt = fread(&e,sizeof(Endereco),1,f); //iremos ler a estrutura Endereco posicionada no meio do arquivo
 	
 	//chegará uma hora que, após tantas divisões terem sido realizadas, o meio acabará sendo igual o inicio e o fim, indicando que o arquivo está prestes a chegar ao fim
 	//caso o CEP dado como argumento não seja encontrado, o fim do arquivo forçará a saída do looping
 	while(qt > 0) {
+		if((inicio == meio) || (fim == meio)) { //a verificação é feita logo no início porque garante que , se, por acaso, o único CEP que sobrou for compatível com o que está sendo buscado, esse match irá ocorrer e o looping seria encerrado na iteração anterior a essa
+			fprintf(stderr, "O CEP que está sendo procurado não existe dentro do arquivo \"cep_ordenado.dat\"\n");
+			return 1;
+		}
 		c++;
-		if(strncmp(argv[1],e.cep,8)==0)
-		{	//o CEP estará justamente no meio do arquivo
+		if(strncmp(argv[1],e.cep,8)==0) {
 			printf("%.72s\n%.72s\n%.72s\n%.72s\n%.2s\n%.8s\n",e.logradouro,e.bairro,e.cidade,e.uf,e.sigla,e.cep);
 			break;
 		}
@@ -66,8 +68,7 @@ int main(int argc, char**argv)
 			inicio = meio + 1;
 			meio = (inicio + fim) / 2;
 		}
-		printf("flag\n"); //como esse código acaba entrando em um looping e nunca é encerrado, é necessário usar do \n para forçar a escrita na tela
-		fseek(f, meio, SEEK_SET); 
+		fseek(f, (meio * sizeof(Endereco)), SEEK_SET); 
 		qt = fread(&e,sizeof(Endereco),1,f);		
 	}
 	printf("Total Lido: %d\n", c); //quantas vezes a função fread() foi executada...
