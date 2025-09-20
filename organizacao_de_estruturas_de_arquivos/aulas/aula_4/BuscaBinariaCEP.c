@@ -72,5 +72,6 @@ int main(int argc, char**argv)
 	}
 	printf("Total Lido: %d\n", c); //quantas vezes a função fread() foi executada...
 	fclose(f);
+	return 0;
 }
 
