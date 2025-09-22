@@ -53,6 +53,18 @@ public class ContaBancaria {
         //construindo a string formatada (Ex.: "R$ 1000,75")
         String saldoFormatado = "R$ " + parte_inteira + "," + decimal; //dessa forma, foco o acesso ao saldo por meio do método getSaldo(), trazendo maior facilidade de manutenção à medida que o código aumenta
         return saldoFormatado;
+    }
 
+    public void depositar(double deposito) {
+        this.setSaldo(this.getSaldo() + deposito);
+    }
+
+    public int sacar(double saque) {
+        if(saque > this.getSaldo()){
+            System.out.println("Não foi possível finalizar a operação: saldo insuficiente");
+            return 1;
+        }
+        this.setSaldo(this.getSaldo() - saque);
+        return 0;
     }
 }

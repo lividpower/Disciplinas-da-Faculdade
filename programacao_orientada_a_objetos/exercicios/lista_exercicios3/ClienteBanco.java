@@ -10,6 +10,30 @@ public class ClienteBanco {
         cliente.setSaldo(saldo);
         String saldoFormatado = cliente.getSaldoFormatado();
         System.out.println("Saldo bancário: " + saldoFormatado);
+        while(true) {
+            System.out.println("Digite 1 se deseja depositar, 0 se deseja sacar ou -1 se deseja encerrar sua operação: ");
+            int input = scanner.nextInt();
+            if(input == 1) {
+                System.out.println("Digite o valor que deseja depositar: ");
+                double deposito = scanner.nextDouble();
+                cliente.depositar(deposito);
+                System.out.println("Saldo atualizado: " + cliente.getSaldoFormatado());
+            }
+            else if(input == 0) {
+                System.out.println("Digite o valor que deseja sacar: ");
+                double saque = scanner.nextDouble();
+                cliente.sacar(saque);
+                System.out.println("Saldo atualizado: " + cliente.getSaldoFormatado());
+            }
+            else if(input == -1) {
+                System.out.println("Operação encerrada");
+                break;
+            }
+            else {
+                System.out.println("O valor digitado é inválido! Por favor, tente novamente!");
+                continue;
+            }
+        }
         scanner.close();
     }
 }
