@@ -4,7 +4,7 @@ import java.util.HashMap;
 public class ContaBancaria {
 
     private double saldo; //o saldo padrão será inicializado automaicamente com 0.0
-    private Data dataAbertura;
+    private Data dataAbertura = new Data();
 
     public Map<String, Integer> getDataAbertura() { //os tipos que são declarados devem ser referentes a uma certa classe, portanto, deve-se utilizar de Integer ao invés de int
         Map<String, Integer> dataAbertura = new HashMap<>(); //criando um dicionário para armazenar a data de abertura
@@ -30,7 +30,7 @@ public class ContaBancaria {
 
     public String getDataAberturaFormatada() {
         Map<String, Integer> dataAbertura = this.getDataAbertura(); //dessa forma, foco o acesso às informações referentes à data por meio do método getDataAbertura(), trazendo maior facilidade de manutenção à medida que o código aumenta
-        String dataAberturaFormatada = dataAbertura.get("Dia") + "/" + dataAbertura.get("Mês") + "/" + dataAbertura.get("Ano");
+        String dataAberturaFormatada = (dataAbertura.get("Dia") < 10 ? ("0" + dataAbertura.get("Dia")) : dataAbertura.get("Dia"))  + "/" + (dataAbertura.get("Mês") < 10 ? ("0" + dataAbertura.get("Mês")) : dataAbertura.get("Mês")) + "/" + dataAbertura.get("Ano"); //.get() está fazendo a leitura das informações de um suposto "dicionário"
         return dataAberturaFormatada;
     }
 
