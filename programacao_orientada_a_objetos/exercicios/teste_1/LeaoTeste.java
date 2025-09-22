@@ -15,7 +15,7 @@ public class LeaoTeste {
     //método gerado pelo Gemini
     public static void imprimirArray(Leao[] array) { // Exemplo de como ficaria em um método
         // Cabeçalho para referência (opcional, mas ajuda a ver as colunas)
-        System.out.printf("%-15s %-12s %-15s %s\n", "Nome", "Está vivo", "Cor", "Idade");
+        System.out.printf("%-15s %-12s %-15s %s\n", "Nome", "Está vivo", "Cor", "Idade"); //os argumentos que estão sendo passados são as strings "Nome", "Está vivo", etc.
         System.out.printf("--------------- ------------ --------------- -----\n");
 
         for (int i = 0; i < array.length; i++) {

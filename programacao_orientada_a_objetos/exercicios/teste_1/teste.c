@@ -7,4 +7,5 @@ int main() {
     printf("%d\n", x); //o que é exibido na tela corresponde a um lixo de memória!!!
     return 0;
     //o código funciona e o compilador de C não bloqueia essa operação!!!!
+    //o compilador de Java, no entanto, bloquearia esse tipo de operação!!!!
 }
