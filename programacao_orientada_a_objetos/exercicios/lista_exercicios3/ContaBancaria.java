@@ -38,20 +38,21 @@ public class ContaBancaria {
 
         //será necessário realizar uma pequena formatação da variável saldo antes de poder utilizá-la
         double get_saldo = getSaldo();
-        int parte_inteira = (int) get_saldo; //estour realizando o truncamento da parte decimal do número, apenas armazenando sua parte inteira!
+        long parte_inteira = (long) get_saldo; //estour realizando o truncamento da parte decimal do número, apenas armazenando sua parte inteira!
         double parte_decimal = get_saldo - parte_inteira; //nessa operação de subtração, prevalece o tipo double!
-        int decimal; //foi necessário definir a variável fora do if...else para que todo o método tivesse acesso a essa variável, caso contrário, a variável só seria acessada localmente pelo if...else
+        //optou-se por trabalhar com o tipo long para conseguir abranger possíveis saldos que extrapolariam o limite do tipo int
+        long decimal; //foi necessário definir a variável fora do if...else para que todo o método tivesse acesso a essa variável, caso contrário, a variável só seria acessada localmente pelo if...else
         parte_decimal = parte_decimal * 100; //deslocando a parte decimal duas casas à esquerda
-        double aux = parte_decimal - ((int) parte_decimal); //verificando se existe algo além da segunda casa decimal para conferir se é necessário calcular uma aproximação dos centavos
+        double aux = parte_decimal - ((long) parte_decimal); //verificando se existe algo além da segunda casa decimal para conferir se é necessário calcular uma aproximação dos centavos
         if(aux >= 0.5) {
-            decimal = ((int) parte_decimal) + 1; //não é possível redefinir o tipo da variável que já foi declarada, portanto, tive que criar uma outra variável para conseguir realizar essa manipulação
+            decimal = ((long) parte_decimal) + 1; //não é possível redefinir o tipo da variável que já foi declarada, portanto, tive que criar uma outra variável para conseguir realizar essa manipulação
         }
         else {
-            decimal = (int) parte_decimal; //não é possível redefinir o tipo da variável que já foi declarada, portanto, tive que criar uma outra variável para conseguir realizar essa manipulação
+            decimal = (long) parte_decimal; //não é possível redefinir o tipo da variável que já foi declarada, portanto, tive que criar uma outra variável para conseguir realizar essa manipulação
         }
 
         //construindo a string formatada (Ex.: "R$ 1000,75")
-        String saldoFormatado = "R$ " + parte_inteira + "," + decimal; //dessa forma, foco o acesso ao saldo por meio do método getSaldo(), trazendo maior facilidade de manutenção à medida que o código aumenta
+        String saldoFormatado = "R$ " + parte_inteira + "," + (decimal == 0 ? "00" : decimal); //dessa forma, foco o acesso ao saldo por meio do método getSaldo(), trazendo maior facilidade de manutenção à medida que o código aumenta
         return saldoFormatado;
     }
 
