@@ -56,7 +56,7 @@ public class Aluno {
         else if(media >= 4 & media <= 5.9) {
             return "Em recuperação";
         }
-        else {
+        else { //as notas estão entre 0 e 10, portanto, temos a garantia de que esse else funcionará corretamente!
             return "Reprovado";
         }
     }
