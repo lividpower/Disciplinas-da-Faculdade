@@ -44,4 +44,8 @@ public class Animal {
     public boolean getVivo() {
         return vivo;
     }
+
+    public void correr() {
+        System.out.println("Animal correndo");
+    }
 }
