@@ -48,4 +48,8 @@ public class Animal {
     public void correr() {
         System.out.println("Animal correndo");
     }
+
+    public String toString() {
+        return getNome();
+    }
 }
