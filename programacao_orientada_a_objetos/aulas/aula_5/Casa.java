@@ -4,7 +4,7 @@ public class Casa extends Imovel {
     }
 
     public Casa() {
-        //super() aparece de forma implícita
-        //esse código não compila porque não existe nenhum construtor na superclasse acima que não possui nenhum parâmetro declarado
+        //nesse caso, por já estarmos chamando um construtor, não existirá uma chamada a super() 
+        this(0); //estou chamando o construtor da minha própria classe
     }   
 }
