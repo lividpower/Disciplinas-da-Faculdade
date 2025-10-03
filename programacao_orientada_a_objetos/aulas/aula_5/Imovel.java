@@ -13,4 +13,8 @@ public class Imovel { //extends Object
     public double getPrecoFinal() {
         return preco + (preco * 0.1);
     }
+
+    public String toString() { //sobrescrevendo o método toString() que já é definido implicitamente
+        return "" + preco; //realizando o casting de um tipo double para uma String
+    }
 }
