@@ -11,6 +11,6 @@ public class Imovel { //extends Object
     }
 
     public double getPrecoFinal() {
-        return preco * (preco * 0.1);
+        return preco + (preco * 0.1);
     }
 }

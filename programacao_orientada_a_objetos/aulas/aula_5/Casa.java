@@ -7,4 +7,5 @@ public class Casa extends Imovel {
         //return getPrecoFinal() + (getPrecoFinal() * 0.1); //nesse caso, o método que é chamado é o referente a classe Casa, sobrescrevendo o método com mesma assinatura da classe Imovel
         return super.getPrecoFinal() + (super.getPrecoFinal() * 0.1); //uma forma de chamar o método da classe acima sem sobrescrever o método
     }   
+    //caso eu crie, dentro de um método main, um objeto do tipo Casa, não poderei usar do método getPrecoFinal porque, para essa instância, o método terá sido sobrescrito o método da classe Imovel
 }
