@@ -5,12 +5,14 @@ import static java.lang.Math.*; //importando os métodos static pertencentes à 
 import java.util.Arrays;
 
 public class ArrayNumeros {
-    public static void inverteArrayNumeros(int array[]) { //neste caso, estou fazendo alterações explícitas dentro do array, logo, quando eu voltar para a main, este array terá sido alterado!
+    public static int[] inverteArrayNumeros(int array[]) { 
+        int []array_ = array; //estou atribuindo o endereço do meu array inicial para essa nova variável temporária array_
         for(int i = 0; i < (array.length / 2); i++) { //o número de modificações reduz pela metade, independente se o array.length é par ou ímpar!
-            int aux = array[(array.length - 1) - i]; 
-            array[(array.length - 1) - i] = array[i];
-            array[i] = aux;
+            int aux = array_[(array.length - 1) - i]; 
+            array_[(array.length - 1) - i] = array_[i];
+            array_[i] = aux;
         }
+        return array_; //agora sim eu fiz uma cópia do array original e não alterei ele diretamente, logo, quando eu acessar a main, terei acesso ao meu array original que se manteve intacto
     }
 
     public static void main(String args[]) {
@@ -22,7 +24,7 @@ public class ArrayNumeros {
             array[i] = random.nextInt(1000);
         }
         System.out.println("Array de Inteiros: " + Arrays.toString(array)); //essa é uma forma bem interessante de imprimirmos um array!!!
-        inverteArrayNumeros(array); //estou modificando o conteúdo do array por meio deste método!
-        System.out.println("Array de Inteiros invertido: " + Arrays.toString(array));
+        System.out.println("Array de Inteiros invertido: " + Arrays.toString(inverteArrayNumeros(array)));
+        System.out.println("Array de Inteiros: " + Arrays.toString(array)); //EU ME ENGANEI AO ACHAR QUE EU NÃO ESTARIA ALTERANDO O ARRAY!!!! RSRSRSRSRSRSRSRS
     }
 }
