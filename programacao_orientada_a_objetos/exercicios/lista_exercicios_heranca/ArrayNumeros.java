@@ -5,12 +5,11 @@ import static java.lang.Math.*; //importando os métodos static pertencentes à 
 import java.util.Arrays;
 
 public class ArrayNumeros {
-    public static int[] inverteArrayNumeros(int array[]) {
+    public static void inverteArrayNumeros(int array[]) { //neste caso, estou fazendo alterações explícitas dentro do array, logo, quando eu voltar para a main, este array terá sido alterado!
         for(int i = 0; i < (array.length / 2); i++) { //o número de modificações reduz pela metade, independente se o array.length é par ou ímpar!
             int aux = array[(array.length - 1) - i]; 
             array[(array.length - 1) - i] = array[i];
             array[i] = aux;
-            return array; 
         }
     }
 
@@ -23,6 +22,7 @@ public class ArrayNumeros {
             array[i] = random.nextInt(1000);
         }
         System.out.println("Array de Inteiros: " + Arrays.toString(array)); //essa é uma forma bem interessante de imprimirmos um array!!!
-        System.out.println("Array de Inteiros invertido: " + Arrays.toString(inverteArrayNumeros(array)));
+        inverteArrayNumeros(array); //estou modificando o conteúdo do array por meio deste método!
+        System.out.println("Array de Inteiros invertido: " + Arrays.toString(array));
     }
 }
