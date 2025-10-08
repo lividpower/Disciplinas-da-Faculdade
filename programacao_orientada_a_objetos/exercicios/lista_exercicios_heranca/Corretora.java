@@ -42,7 +42,9 @@ public class Corretora {
                 if(t2[i] == null) {
                     break;
                 }
-                stringEndereco += t2[i];
+                if(t2[i] != "") {
+                    stringEndereco += (t2[i] + " ");
+                }
             }
             return stringEndereco;            
         }
@@ -68,7 +70,6 @@ public class Corretora {
             Random random = new Random();
             array[i] = new Imovel(); //inicializando o array com instâncias da classe
             array[i].setPreco(random.nextDouble() * Math.pow(10,7));
-            //necessário fazer a leitura do endereço posteriormente...
             try {
                 //Map<String, String> endereco = buscaEnderecoAleatorio();
                 array[i].setEndereco(buscaEnderecoAleatorio()); 
