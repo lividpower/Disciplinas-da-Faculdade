@@ -1,8 +1,7 @@
 public class Imovel {
 
     private double preco;
-    private 
-    String endereco;
+    private String endereco;
 
     public double getPreco() {
         return preco;

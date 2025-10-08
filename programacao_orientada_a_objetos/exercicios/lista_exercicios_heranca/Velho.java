@@ -1,5 +1,5 @@
 public class Velho extends Imovel {
     public double getPreco() {
-        return (super.preco * 0,9);
+        return (super.getPreco() * 0.9);
     }
 }
