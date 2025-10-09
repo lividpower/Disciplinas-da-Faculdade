@@ -1,10 +1,9 @@
 public class Processa {
-
+	//esse código compila!
 	public static void main(String[] args) {
-		Processa p = new Processa(); 
-		//é possível declarar uma variável referente a classe que estamos construindo, como se fosse algo "recursivo"...estamos chamando a classe dentro da própria classe
-		System.out.println("Chamando o método main() de forma recursiva"); 
-		p.main(args);
+		System.out.println(new Processa().calcula(2,3)); 
+		//é indiferente utilizar de new Processa() com ou sem a separação de parênteses
+		//o que estamos fazendo aqui basicamente é criando uma instância para conseguir manipular o método calcula
 	}
 	public double calcula(double a, double b) {
 		return (a+b) * (a*0.1) + (b*0.9);
