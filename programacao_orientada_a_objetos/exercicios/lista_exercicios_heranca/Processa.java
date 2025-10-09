@@ -1,7 +1,7 @@
 public class Processa {
 //este código não compila!!!
 	public static void main(String[] args) {
-		System.out.println(calcula(2,3)); 
+		System.out.println(this.calcula(2,3)); 
 		//estamos tentando utilizar de um método não-estático, 
 		//mas sem declarar uma instância para esta respectiva classe
 		//o certo seria utilizar, nesse caso, de this.calcula(2,3)
