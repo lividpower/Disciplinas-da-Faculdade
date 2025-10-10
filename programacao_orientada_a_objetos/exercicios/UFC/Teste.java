@@ -5,11 +5,11 @@ public class Teste {
     private static int NUM_LUTADORES = 10;
 
     public static void main(String []args) {
-        Lutador arrayLutadores[] = new Lutador[NUM_LUTADORES];
+        Lutador arrayLutadores[] = new Lutador[NUM_LUTADORES]; //é necessário declarar essa variável fora do for(), posto que estarei utilizando dela ao longo de todo meu método main
+        Scanner scanner = new Scanner(System.in); //declarando de forma generalizada para que o método main possa utilizar dessa instância a qualquer momento
         System.out.println("Entre com as informações sobre os lutadores: ");
         for(int i = 0; i < arrayLutadores.length; i++) {
 
-            Scanner scanner = new Scanner(System.in);
             boolean teste = false;
             String nome;
             int idade;
@@ -25,16 +25,16 @@ public class Teste {
             peso = scanner.nextDouble();
             scanner.nextLine();
             if(peso <= 65.0) {
-                Lutador lutador = new PesoPena(nome, idade, peso);
+                arrayLutadores[i] = new PesoPena(nome, idade, peso);
             }
             else if(peso <= 83.9) {
-                Lutador lutador = new PesoMedio(nome, idade, peso);
+                arrayLutadores[i] = new PesoMedio(nome, idade, peso);
             }
             else if(peso <= 93.0) {
-                Lutador lutador = new MeioPesado(nome, idade, peso);
+                arrayLutadores[i] = new MeioPesado(nome, idade, peso);
             }
             else if(peso <= 120.2) {
-                Lutador lutador = new PesoPesado(nome, idade, peso);
+                arrayLutadores[i] = new PesoPesado(nome, idade, peso);
             }
             else {
                 //caso o lutador exceda o peso máximo
@@ -56,20 +56,20 @@ public class Teste {
                 System.out.println("Nome: " + nome);
                 System.out.println("Idade: " + idade);
                 System.out.println("Peso: " + peso);
-                System.out.prinln("Com este peso, o lutador não está apto para lutar");
+                System.out.println("Com este peso, o lutador não está apto para lutar");
                 System.out.println("----------------------");
             }
         }
         System.out.println(""); //pulando uma linha
-        System.out.prinln("Agora é hora de escolhermos um desses lutadores...");
-        System.out.prinln("Digite um inteiro de 0 até 9 para escolher um entre os lutadores: ");
+        System.out.println("Agora é hora de escolhermos um desses lutadores...");
+        System.out.println("Digite um inteiro de 0 até 9 para escolher um entre os lutadores: ");
         int lutadorSelecionado = scanner.nextInt();
-        System.out.println("Características deste lutador: " + lutador.getInformacoesLutador());
+        System.out.println("Características deste lutador: " + arrayLutadores[lutadorSelecionado].getInformacoesLutador());
         System.out.println("Categoria deste lutador: " + arrayLutadores[lutadorSelecionado].categoriaLutador());
         arrayLutadores[lutadorSelecionado].possiveisLutas(arrayLutadores);
         System.out.println("");
         System.out.println("Agora é hora de sortearmos um lutador para conseguirmos marcar essa luta!");
-        Lutador lutadorSorteado = lutador.sorteioLuta(arrayLutadores);
+        Lutador lutadorSorteado = arrayLutadores[lutadorSelecionado].sorteioLuta(arrayLutadores);
         System.out.println("Características sobre o lutador que foi sorteado: " + lutadorSorteado.getInformacoesLutador());
     }
 }
