@@ -50,7 +50,7 @@ public abstract class Lutador { //quando declaramos a classe como abstrata, nenh
     public void possiveisLutas(Lutador arrayLutadores[]) {
         System.out.println("Lutadores aptos a lutar contra " + this.nome + ":");
         for(int i = 0; i < arrayLutadores.length; i++){
-            if(arrayLutadores[i].modalidade == this.modalidade) {
+            if(arrayLutadores[i].modalidade == this.modalidade & arrayLutadores[i].nome != this.nome) {
                 System.out.println(arrayLutadores[i].nome);
             }
         }

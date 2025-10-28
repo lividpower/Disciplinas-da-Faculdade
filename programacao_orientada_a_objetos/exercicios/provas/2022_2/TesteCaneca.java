@@ -11,7 +11,7 @@ public class TesteCaneca {
         metodoCan2(c3); 
         metodoCan3(c);
         c.x = 20; //mesmo essa variável sendo static, ela pode ser chamada dessa forma!
-        c2.x = 15;
+        c2.x = 15; //quando alteramos a variável x, por ela ser static, estamos alterando o valor dela para qualquer objeto referente a classe Caneca
         System.out.println(c.x+c2.x+c3.x); 
         int i = c3.getQuantidade(); 
         System.out.println(i);

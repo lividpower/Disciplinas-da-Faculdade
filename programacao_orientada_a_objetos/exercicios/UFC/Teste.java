@@ -10,7 +10,7 @@ public class Teste {
         System.out.println("Entre com as informações sobre os lutadores: ");
         for(int i = 0; i < arrayLutadores.length; i++) {
 
-            boolean teste = false;
+            boolean teste = false; //inicializando para cada lutador que está sendo adicionado
             String nome;
             int idade;
             double peso; //apenas criando variáveis para facilitar a manipulação dos dados
@@ -40,7 +40,7 @@ public class Teste {
                 //caso o lutador exceda o peso máximo
                 teste = true;
             }
-            if(teste = false) {
+            if(teste == false) {
                 System.out.println(""); //pulando uma linha
                 System.out.println("----------------------");
                 System.out.println("Lutador " + (i + 1));
@@ -49,7 +49,7 @@ public class Teste {
                 System.out.println("Peso: " + peso);
                 System.out.println("----------------------");
             }
-            else {
+            else if(teste == true){
                 System.out.println(""); //pulando uma linha
                 System.out.println("----------------------");
                 System.out.println("Lutador " + (i + 1));
@@ -71,5 +71,6 @@ public class Teste {
         System.out.println("Agora é hora de sortearmos um lutador para conseguirmos marcar essa luta!");
         Lutador lutadorSorteado = arrayLutadores[lutadorSelecionado].sorteioLuta(arrayLutadores);
         System.out.println("Características sobre o lutador que foi sorteado: " + lutadorSorteado.getInformacoesLutador());
+        scanner.close();
     }
 }
