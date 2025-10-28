@@ -33,7 +33,13 @@ int main(int argc, char* argv[]) {
         teste_retorno = fseek(file_cep, 0, SEEK_END); //colocando o cursor de leitura ao final do arquivo
         tamanho_arquivo = ftell(file_cep); 
         num_registros = tamanho_arquivo / 300;
-        Indice indices[num_registros]; //isto gera um segmentation fault!
+        //Indice indices[num_registros]; //tentar criar este array em memória estática estouraria o limite de memória existente na pilha, gerando um stack overflow
+        Indice *indices;
+        indices = (Indice*) malloc(num_registros * sizeof(Indice));
+        if(indices == NULL) {
+            fprintf(stderr, "Erro na alocação de memória dinâmica");
+            return 1;
+        }
 
         //leitura do arquivo
         for(int i = 0; i < num_registros; i++) {
