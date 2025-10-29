@@ -16,18 +16,17 @@ int main(int argc, char* argv[]) {
 
     if(argc == 2) {
         //declarações
-        FILE *file_indices, *file_cep;
         long tamanho_arquivo, num_registros; //ftell retorna um long
         int teste_retorno; //fseek retorna um int
 
         file_indices = fopen("indices_cep.dat", "wb"); //criando um novo arquivo
         if(file_indices == NULL) {
-            fprintf(stderr, "Erro ao abrir o arquivo");
+            fprintf(stderr, "Erro ao abrir o arquivo\n");
             return 1;
         }
         file_cep = fopen("cep.dat", "rb");
         if(file_cep == NULL) {
-            fprintf(stderr, "Erro ao abrir o arquivo");
+            fprintf(stderr, "Erro ao abrir o arquivo\n");
             return 1;
         }
         teste_retorno = fseek(file_cep, 0, SEEK_END); //colocando o cursor de leitura ao final do arquivo
@@ -37,7 +36,7 @@ int main(int argc, char* argv[]) {
         Indice *indices;
         indices = (Indice*) malloc(num_registros * sizeof(Indice));
         if(indices == NULL) {
-            fprintf(stderr, "Erro na alocação de memória dinâmica");
+            fprintf(stderr, "Erro na alocação de memória dinâmica\n");
             return 1;
         }
 
@@ -53,6 +52,9 @@ int main(int argc, char* argv[]) {
         //ordenação e escrita dos índices
         qsort(indices, num_registros, sizeof(Indice), compara);
         fwrite(indices, sizeof(Indice), num_registros, file_indices);
+
+        fclose(file_cep);
+        fclose(file_indices); //liberando a memória alocada para a estrutura FILE referente ao arquivo
     }
     else {
         fprintf(stderr, "USO: %s [CEP]\n", argv[0]);

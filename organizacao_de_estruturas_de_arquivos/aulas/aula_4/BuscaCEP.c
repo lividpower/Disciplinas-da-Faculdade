@@ -48,6 +48,7 @@ int main(int argc, char**argv)
 		qt = fread(&e,sizeof(Endereco),1,f);		
 	}
 	printf("Total Lido: %d\n", c); //quantas vezes a função fread() foi executada...
+	printf("Total de bytes lidos durante a busca pelo cep: %ld\n", (c - 1) * sizeof(Endereco)); //quantos bytes foram lidos além dos necessários durante a busca pelo registro que gostaríamos de consultar
 	fclose(f);
 }
 
