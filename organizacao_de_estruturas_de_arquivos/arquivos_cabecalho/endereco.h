@@ -4,6 +4,9 @@
 //este é um arquivo de cabeçalhos
 //não é interessante definirmos as funções dentro deste arquivo!
 
+//variáveis globais
+FILE *file_indices, *file_cep;
+
 typedef struct _Endereco
 {	//todos esses caracteres juntos formam uma linha com 300 caracteres, justamente igual ao padrão presente dentro do arquivo cep.dat
 	//mas e os caracteres nulos? neste arquivo, não temos caracteres nulos! devemos tomar cuidado com isso ao manipular esses vetores de caractere

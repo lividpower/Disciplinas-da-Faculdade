@@ -16,6 +16,7 @@ int main(int argc, char* argv[]) {
 
     if(argc == 2) {
         //declarações
+
         long tamanho_arquivo, num_registros; //ftell retorna um long
         int teste_retorno; //fseek retorna um int
 
