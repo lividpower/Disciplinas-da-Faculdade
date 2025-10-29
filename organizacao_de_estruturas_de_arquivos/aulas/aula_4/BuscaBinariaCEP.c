@@ -72,6 +72,7 @@ int main(int argc, char**argv)
 		qt = fread(&e,sizeof(Endereco),1,f);		
 	}
 	printf("Total Lido: %d\n", c); //quantas vezes a função fread() foi executada...
+	printf("Total de bytes que foram lidos durante o processo de busca do registro desejado: %ld\n", (c - 1) * sizeof(Endereco));
 	fclose(f);
 	return 0;
 }
