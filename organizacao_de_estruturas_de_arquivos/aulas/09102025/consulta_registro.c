@@ -29,10 +29,12 @@ long buscaBinariaIndice(int *qtd, char *cep, long num_indices) {
     //necessário posicionar o cursor no meio do arquivo
     fseek(file_indices, meio * sizeof(Indice), SEEK_SET);
     *qtd += fread(&buffer_indice, sizeof(Indice), 1, file_indices);
-    while(inicio != fim) { //condição para que a busca binária seja finalizada, mesmo que nenhum CEP seja encontrado
+    int i = 0; //contador
+    while(i < num_indices)  { //se o número de índices lidos extrapolar o número de índices existente, estaríamos lendo índices repetidos, o que indica que a busca binária poderá ser finalizada!
+        i++;
         if(strncmp(buffer_indice.cep, cep, 8) == 0) {
             posicao_cep = buffer_indice.posicao_bytes;
-            break;
+            return posicao_cep; 
         }
         else if(strncmp(buffer_indice.cep, cep, 8) > 0) {
             fim = meio - 1;
@@ -45,9 +47,10 @@ long buscaBinariaIndice(int *qtd, char *cep, long num_indices) {
         fseek(file_indices, sizeof(Indice) * meio, SEEK_SET);
         *qtd += fread(&buffer_indice, sizeof(Indice), 1, file_indices);
     }
-    return posicao_cep; 
-    //necessário conferir os possíveis caminhos que podem ser tomados dentro desta pequena função...
-    //caso, por exemplo, o cep que estamos procurando não exista dentro do arquivo de índices...
+    //caso chegue até este ponto, significa que o cep não foi encontrado dentro do arquivo de índices
+    //logo, i >= num_indices
+    return -1; //código para sinalização de erro
+    //a mensagem de erro será detalhada dentro da main como forma de manter uma organização do código
 
 }
 
@@ -59,7 +62,7 @@ int main(int argc, char **argv) {
         file_indices = fopen("indices_cep.dat", "rb");
         file_cep = fopen("cep.dat", "rb"); //criamos uma referência para o arquivo, porém, ainda não o carregamos em memória
         if(file_indices == NULL || file_cep == NULL) {
-            fprintf(stderr, "Erro durante a criação de uma referência para o arquivo");
+            fprintf(stderr, "Erro durante a criação de uma referência para o arquivo.\n");
             return 1;
         }
         
@@ -73,21 +76,30 @@ int main(int argc, char **argv) {
         rewind(file_indices); //voltando com o cursor para o início do arquivo e resetando as flags de erro
         //posicao_cep = buscaSequencialIndice(&qtd_bytes, argv[1], num_indices);
         posicao_cep = buscaBinariaIndice(&qtd_bytes, argv[1], num_indices);
-        printf("Total de bytes lido durante a busca pelo cep: %ld\n\n", qtd_bytes * sizeof(Indice)); //esta operação retorna um long, logo, é necessário usar de %ld
+        if(posicao_cep != -1) {
+            printf("Total de bytes lido durante a busca pelo cep: %ld\n\n", qtd_bytes * sizeof(Indice)); //esta operação retorna um long, logo, é necessário usar de %ld
 
-        //após termos encontrado a posição do cep dentro do arquivo original, agora sim podemos realizar a leitura do registro referente ao respectivo cep!
-        fseek(file_cep, posicao_cep, SEEK_SET); //a posição é dada em bytes!
-        Endereco buffer_registro;
-        fread(&buffer_registro, sizeof(Endereco), 1, file_cep);
-        //printando as informações do registro que queríamos consultar
-        printf("%.72s\n%.72s\n%.72s\n%.72s\n%.2s\n%.8s\n",buffer_registro.logradouro,buffer_registro.bairro,buffer_registro.cidade,buffer_registro.uf,buffer_registro.sigla,buffer_registro.cep);
-
+            //após termos encontrado a posição do cep dentro do arquivo original, agora sim podemos realizar a leitura do registro referente ao respectivo cep!
+            fseek(file_cep, posicao_cep, SEEK_SET); //a posição é dada em bytes!
+            Endereco buffer_registro;
+            fread(&buffer_registro, sizeof(Endereco), 1, file_cep);
+            //printando as informações do registro que queríamos consultar
+            printf("%.72s\n%.72s\n%.72s\n%.72s\n%.2s\n%.8s\n",buffer_registro.logradouro,buffer_registro.bairro,buffer_registro.cidade,buffer_registro.uf,buffer_registro.sigla,buffer_registro.cep);
+        }
+        else {
+            fprintf(stderr, "O CEP informado não existe ou ainda não foi incluído dentro do arquivo.\n");
+            return 1;
+        }
         //fechamento dos arquivos
         fclose(file_cep);
         fclose(file_indices);
     }
-    else {
+    else if (argc > 2) {
         fprintf(stderr, "USO: %s [CEP]\n", argv[0]); //mensagens direcionadas ao stderr são escritas imediatamente na saída padrão, para que seja possível vê-las antes de um crash!
+        return 1;
+    }
+    else if (strlen(argv[1]) != 8) {
+        fprintf(stderr, "O CEP possui o seguinte formato: 99999-999. Por favor, corrija sua entrada.\n");
         return 1;
     }
 }

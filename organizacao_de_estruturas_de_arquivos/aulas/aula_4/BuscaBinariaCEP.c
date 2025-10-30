@@ -19,6 +19,7 @@ int main(int argc, char**argv)
 {
 	FILE *f;
 	Endereco e; 
+	long num_enderecos;
 	int qt;
 	int c;
 	int inicio, meio, fim; // criando variáveis para implementação da busca binária
@@ -40,7 +41,8 @@ int main(int argc, char**argv)
 		fprintf(stderr, "Erro na função ftell()\n");
 	}
 	fseek(f, 0, SEEK_END);
-	fim = (ftell(f) - 1) / sizeof(Endereco); //como iremos trabalhar com indexação, precisamos subtrair 1 para conseguir manipular posteriormente os indíces das strings
+	num_enderecos = ftell(f) / sizeof(Endereco);
+	fim = num_enderecos - 1; //como iremos trabalhar com indexação, precisamos subtrair 1 para conseguir manipular posteriormente os indíces das strings
 	if(fim == -1) {
 		fprintf(stderr, "Erro na função ftell()\n");
 	}
@@ -51,8 +53,8 @@ int main(int argc, char**argv)
 	//chegará uma hora que, após tantas divisões terem sido realizadas, o meio acabará sendo igual o inicio e o fim, indicando que o arquivo está prestes a chegar ao fim
 	//caso o CEP dado como argumento não seja encontrado, o fim do arquivo forçará a saída do looping
 	while(qt > 0) {
-		if((inicio == meio) || (fim == meio)) { //a verificação é feita logo no início porque garante que , se, por acaso, o único CEP que sobrou for compatível com o que está sendo buscado, esse match irá ocorrer e o looping seria encerrado na iteração anterior a essa
-			fprintf(stderr, "O CEP que está sendo procurado não existe dentro do arquivo \"cep_ordenado.dat\"\n");
+		if(c > num_enderecos) { //a verificação é feita logo no início porque garante que , se, por acaso, o único CEP que sobrou for compatível com o que está sendo buscado, esse match irá ocorrer e o looping seria encerrado na iteração anterior a essa
+			fprintf(stderr, "O CEP que está sendo procurado não existe dentro do arquivo \"cep_ordenado.dat\".\n");
 			return 1;
 		}
 		c++;
