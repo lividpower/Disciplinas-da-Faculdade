@@ -5,14 +5,21 @@
 #include <math.h>
 #include <assert.h>
 
+//FIXME: Necessário verificar a questão de liberação de memória para os arrays fileName
 
 int main(int argc, char **argv) {
 
+    char **fileNamesBlocos, **fileNamesBlocoSaida;
     long n, numBlocos;
     n = 4;
     double totalBlocos = pow(2, n); //pow(2, n) = 2 * 2 * 2 * 2 * 2 ... (n vezes)
 
-    FILE* fileCep = fopen("cep.dat", "rb"); //criando uma referência ao arquivo que, em teoria, não cabe na memória principal
+    //alocando memória para meu vetor de strings
+    fileNamesBlocos = (char**) malloc(totalBlocos * sizeof(char*));
+    assert(fileNamesBlocos == NULL); //erro na alocação de memória!
+
+    //file_cep é variável global dentro de endereco.h
+    file_cep = fopen("cep.dat", "rb"); //criando uma referência ao arquivo que, em teoria, não cabe na memória principal
     fseek(file_cep, 0, SEEK_END);
     long tamanhoArquivo = ftell(file_cep); //temos o tamanho, em bytes, do arquivo cep.dat
     long tamanhoBloco = tamanhoArquivo / totalBlocos; //aqui temos o tamanho de cada pedaço que iremos dividir o arquivo!
@@ -21,16 +28,43 @@ int main(int argc, char **argv) {
     //agora devemos começar a trabalhar em cima de cada um dos blocos separadamente
     //...
     fseek(file_cep, 0, SEEK_SET); //inicia-se a leitura do arquivo cep.dat
-    int i; //declarando ele fora do for() para poder conferir algumas condições após o for()...
-    //iremos utilizar de i = 1 ao invés de i = 0 para facilitar algumas comparações futuras!
-    for(i = 1; i <= (totalBlocos / 2); i++) { //iremos fazer a intercalação em pares!
+    double totalParBlocos = cria_blocos(totalBlocos, numRegistrosBloco, fileNamesBlocos); //devemos verificar se o valor de "fileNamesBlocos" é alterado dentro da função, mesmo não sendo passado por referência...
+    //a partir daqui já temos todos os arquivos de blocos criados...
+    //agora devemos intercalá-los...
+
+    int cont = 1; //quantas vezes a função intercalaBlocos() será chamada
+    totalParBlocos = intercalaBlocos(totalParBlocos, fileNamesBlocos, fileNamesBlocoSaida, cont);
+    
+}
+
+
+int compara(const void *registro_1, const void *registro_2) {
+    return strncmp(((Endereco*)registro_1)->cep, ((Endereco*)registro_2)->cep, 8); 
+    //como neste caso temos um ponteiro para uma struct, devemos utilizar de "->"
+    //deve-se converter o void pointer para um ponteiro do tipo Endereco antes de tentar acessar os dados 
+}
+
+void criaBlocos(double totalBlocos, long numRegistrosBloco, char **fileNamesBlocos) {
+
+    for(int i = 0; i < (totalBlocos / 2); i = i + 2) { //estaremos pulando de dois em dois!
+
+
+        //inicializando o nome dos arquivos para cada bloco
+        required_size1 = snprintf(NULL, 0, "bloco%d.dat", i + 1);
+        required_size2 = snprintf(NULL, 0, "bloco%d.dat", i + 2); //retorna o número de bytes necessários para escrever a string, excluindo o \0
+        fileNamesBlocos[i] = (char*) malloc((required_size1 + 1) * sizeof(char));
+        fileNamesBlocos[i + 1] = (char*) malloc((required_size2 + 1) * sizeof(char));
+        assert(fileNamesBlocos[i] == NULL || fileNamesBlocos[i + 1] == NULL);
+        snprintf(fileNamesBlocos[i], (required_size1 + 1), "bloco%d.dat", i + 1); //estou escrevendo na string
+        snprintf(fileNamesBlocos[i + 1], (required_size2 + 1), "bloco%d.dat", i + 2); 
+        //se eu tentasse escrever com sprintf() e o meu buffer não tivesse tamanho necessário para escrita, ocorreria um buffer overflow!
 
         //Bloco A
-        arrayEnderecos = (Endereco*) malloc(numRegistrosBloco * sizeof(Endereco));
+        Endereco* arrayEnderecos = (Endereco*) malloc(numRegistrosBloco * sizeof(Endereco));
         int qtd = fread(arrayEnderecos, sizeof(Endereco), numRegistrosBloco, file_cep);
         assert(qtd != numRegistrosBloco);
         qsort(arrayEnderecos, numRegistrosBloco, sizeof(Endereco), compara); //ordenando os registros deste nosso array temporário
-        fileBlocoA = fopen("bloco_A.dat", "wb"); //sempre que este arquivo for aberto dentro do looping, ele será sobrescrito!!!
+        fileBlocoA = fopen(fileNamesBlocos[i], "wb"); 
         qtd = fwrite(arrayEnderecos, sizeof(Endereco), numRegistrosBloco, fileBlocoA); //escrevendo os registros dentro de um bloco A
         assert(qtd != numRegistrosBloco);
         free(arrayEnderecos); //liberamos a memória do bloco, logo, este bloco já não está mais ocupando espaço na memória
@@ -41,26 +75,43 @@ int main(int argc, char **argv) {
         qtd = fread(arrayEnderrecos, sizeof(Endereco), numRegistrosBloco, file_cep);
         assert(qtd != numRegistrosBloco);
         qsort(arrayEnderecos, numRegistrosBloco, sizeof(Endereco), compara);
-        fileBlocoB = fopen("bloco_B.dat", "wb"); //sempre que este arquivo for aberto dentro do looping, ele será sobrescrito!!!
+        fileBlocoB = fopen(fileNamesBlocos[i + 1], "wb"); 
         qtd = fwrite(arrayEnderecos, sizeof(Endereco), numregistrosBloco, fileBlocoB);
         assert(qtd != numRegistrosBloco);
         free(arrayEnderecos);
-        fclose(file_cep); //cep.dat não será utilizado nas operações abaixo
+        fclose(file_cep); 
+        fclose(fileBlocoA);
+        fclose(fileBlocoB);
+    }
+    return;
+}
 
+int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNamesBlocoSaida, int cont) {
+
+    int i;
+    double totalParBlocos = totalBlocos / 2;
+
+    free(fileNamesBlocoSaida); 
+    fileNamesBlocoSaida = (char**) malloc(totalParBlocos  * sizeof(char*));
+
+    for(i = 0; i < totalParBlocos; i++) {
+
+        //inicializando os nomes dos arquivos de saída
+        //precisamos diferenciar os arquivos de saída de acordo com a quantidade de vezes que esta função for chamada, evitando a sobrescrita de arquivos! Daí utiliza-se de "cont"
+        int required_size = snprintf(NULL, 0, "arquivo_saida%d_%d.dat", i + 1, cont); 
+        fileNamesBlocoSaida[i] = (char*) malloc((required_size + 1) * sizeof(char)); 
+        snprintf(fileNamesBlocoSaida[i], (required_size + 1), "arquivo_saida%d_%d.dat", i + 1, cont); //estou escrevendo na string 
+        
         //intercalação dos blocos A e B
         //...
+        fileBlocoA = fopen(fileNamesBlocos[i], "rb");
+        fileBlocoB = fopen(fileNamesBlocos[i + 1], "rb");
+        saida = fopen(fileNamesBlocoSaida[i], "wb"); //criando um novo arquivo para conseguir intercalar os blocos A e B //estaremos sempre criando um arquivo diferente!
 
-        char *fileName;
-        sprintf(fileName, "intercala_blocos%d.dat", i); //estou escrevendo na string
-        saida = fopen(fileName, "wb"); //criando um novo arquivo para conseguir intercalar os blocos A e  //estaremos sempre criando um arquivo diferente!
-
-        //colocando a cabeça de leitura dos respectivos blocos de volta ao início
-        rewind(fileBlocoA);
-        rewind(fileBlocoB);
         Endereco A, B; 
         //lendo o primeiro registro de cada um dos respectivos blocos
-        fread(&A, sizeof Endereco, 1, fileBlocoA);
-        fread(&B, sizeof Endereco, 1, fileBlocoB);
+        fread(&A, sizeof Endereco, 1, fileNamesBlocos[i]);
+        fread(&B, sizeof Endereco, 1, fileNamesBlocos[i + 1]);
         
         //lembrando que estamos ordenando o arquivo em ordem crescente!
         while(!feof(fileBlocoA) && !feof(fileBlocoB)) { //caso algum dos arquivos chegue ao fim, iremos sair do looping!
@@ -71,17 +122,17 @@ int main(int argc, char **argv) {
             else { // A < B
                 fwrite(&A, sizeof(Endereco), 1, saida);
                 fread(&A, sizeof(Endereco), 1, fileBlocoA);
-            }
+        }
         }
 
         //agora faremos a verificação 
-        while(!feof(fileBlocoA) {
-            fwrite(&A, sizeof(Endereco), 1, fileBlocoA);
+        while(!feof(fileBlocoA)) {
+            fwrite(&A, sizeof(Endereco), 1, saida);
             fread(&A, sizeof(Endereco), 1, fileBlocoA);
         }
 
         while(!feof(fileBlocoB)) {
-            fwrite(&B, sizeof(Endereco), 1, fileBlocoB);
+            fwrite(&B, sizeof(Endereco), 1, saida);
             fread(&B, sizeof(Endereco), 1, fileBlocoB);
         }
         //fim da intercalação
@@ -91,13 +142,14 @@ int main(int argc, char **argv) {
         fclose(fileBlocoB);
         remove(fileBlocoB); //exclui o arquivo do diretório caso não exista mais nenhuma referência a este arquivo dentre os processos existentes...
     }
+    if(totalParBlocos != 1 {
+        //substituindo os blocos pelos arquivos de saída para que possa ocorrer a próxima intercalação!
+        free(fileNamesBlocos);
+        fileNamesBlocos = (char**) malloc(sizeof(fileNamesBlocoSaida));
+    }
+    else {
+        //o arquivo de saída já será o arquivo final!
+        free(fileNamesBlocos); //já não precisaremos mais dos blocos anteriores!
+    }
+    return totalParBlocos; //iremos retornar quantos blocos de saída nós produzimos durante esta função!
 }
-
-
-int compara(const void *registro_1, const void *registro_2) {
-    return strncmp(((Endereco*)registro_1)->cep, ((Endereco*)registro_2)->cep, 8); 
-    //como neste caso temos um ponteiro para uma struct, devemos utilizar de "->"
-    //deve-se converter o void pointer para um ponteiro do tipo Endereco antes de tentar acessar os dados 
-}
-
-
