@@ -28,13 +28,23 @@ int main(int argc, char **argv) {
     //agora devemos começar a trabalhar em cima de cada um dos blocos separadamente
     //...
     fseek(file_cep, 0, SEEK_SET); //inicia-se a leitura do arquivo cep.dat
-    double totalParBlocos = cria_blocos(totalBlocos, numRegistrosBloco, fileNamesBlocos); //devemos verificar se o valor de "fileNamesBlocos" é alterado dentro da função, mesmo não sendo passado por referência...
+    cria_blocos(totalBlocos, numRegistrosBloco, fileNamesBlocos); //devemos verificar se o valor de "fileNamesBlocos" é alterado dentro da função, mesmo não sendo passado por referência...
     //a partir daqui já temos todos os arquivos de blocos criados...
     //agora devemos intercalá-los...
 
-    int cont = 1; //quantas vezes a função intercalaBlocos() será chamada
-    totalParBlocos = intercalaBlocos(totalParBlocos, fileNamesBlocos, fileNamesBlocoSaida, cont);
+    int cont = 0; //quantas vezes a função intercalaBlocos() será chamada
+    double totalParBlocos;
+    do{
+        cont++;
+        totalParBlocos = intercalaBlocos(totalBlocos, fileNamesBlocos, fileNamesBlocoSaida, cont);
+        totalBlocos = totalParBlocos; //os arquivos de saída passarão a ser o número de blocos restantes...
+    }while(totalBlocos != 1);
+    //se totalBlocos == 1, o arquivo de saída já é o arquivo final
+    //podemos parar com as intercalações!
     
+    int retorno = rename(fileNamesBlocoSaida[0], "cep-ordenado.dat"); //alterando o nome do arquivo de saída
+    assert(retorno != 0);
+    return 0;
 }
 
 
@@ -90,8 +100,6 @@ int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNames
 
     int i;
     double totalParBlocos = totalBlocos / 2;
-
-    free(fileNamesBlocoSaida); 
     fileNamesBlocoSaida = (char**) malloc(totalParBlocos  * sizeof(char*));
 
     for(i = 0; i < totalParBlocos; i++) {
@@ -142,14 +150,19 @@ int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNames
         fclose(fileBlocoB);
         remove(fileBlocoB); //exclui o arquivo do diretório caso não exista mais nenhuma referência a este arquivo dentre os processos existentes...
     }
-    if(totalParBlocos != 1 {
+    if(totalParBlocos != 1) {
         //substituindo os blocos pelos arquivos de saída para que possa ocorrer a próxima intercalação!
         free(fileNamesBlocos);
         fileNamesBlocos = (char**) malloc(sizeof(fileNamesBlocoSaida));
+        for(int x = 0; x < totalParBlocos; x++) {
+            fileNamesBlocos[x] = fileNamesBlocoSaida[x]; //passando a referência de um para outro!
+        }
+        free(fileNamesBlocoSaida); //liberando a memória que não será mais necessária...os blocos de saída serão redefinidos na próxima intercalação
     }
     else {
         //o arquivo de saída já será o arquivo final!
         free(fileNamesBlocos); //já não precisaremos mais dos blocos anteriores!
+        //não liberamos o fileNamesBlocoSaida porque precisaremos dele dentro da main!
     }
     return totalParBlocos; //iremos retornar quantos blocos de saída nós produzimos durante esta função!
 }
