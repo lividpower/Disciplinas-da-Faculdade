@@ -6,7 +6,7 @@ import java.io.IOException;
 //import java.util.Map;
 
 public class Corretora {
-
+    
     static final int NUM_IMOVEIS = 5; //criando uma constante em Java
     static final int TAMANHO_ENDERECO = 300;
 
