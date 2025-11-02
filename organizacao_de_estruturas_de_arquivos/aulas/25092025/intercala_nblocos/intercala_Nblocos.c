@@ -31,6 +31,7 @@ int main(int argc, char **argv) {
     //...
     fseek(file_cep, 0, SEEK_SET); //inicia-se a leitura do arquivo cep.dat
     criaBlocos(totalBlocos, numRegistrosBloco, fileNamesBlocos); //devemos verificar se o valor de "fileNamesBlocos" é alterado dentro da função, mesmo não sendo passado por referência...
+    fclose(file_cep);
     //a partir daqui já temos todos os arquivos de blocos criados...
     //agora devemos intercalá-los...
 
@@ -103,13 +104,13 @@ int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNames
     double totalParBlocos = totalBlocos / 2;
     fileNamesBlocoSaida = (char**) malloc(totalParBlocos  * sizeof(char*));
 
-    for(i = 0; i < totalParBlocos; i++) {
+    for(i = 0; i < totalParBlocos; i = i + 2) {
 
         //inicializando os nomes dos arquivos de saída
         //precisamos diferenciar os arquivos de saída de acordo com a quantidade de vezes que esta função for chamada, evitando a sobrescrita de arquivos! Daí utiliza-se de "cont"
-        int required_size = snprintf(NULL, 0, "arquivo_saida%d_%d.dat", i + 1, cont); 
+        int required_size = snprintf(NULL, 0, "arquivo_saida%d_%d.dat", i, cont); 
         fileNamesBlocoSaida[i] = (char*) malloc((required_size + 1) * sizeof(char)); 
-        snprintf(fileNamesBlocoSaida[i], (required_size + 1), "arquivo_saida%d_%d.dat", i + 1, cont); //estou escrevendo na string 
+        snprintf(fileNamesBlocoSaida[i], (required_size + 1), "arquivo_saida%d_%d.dat", i, cont); //estou escrevendo na string 
         
         //intercalação dos blocos A e B
         //...
@@ -131,9 +132,8 @@ int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNames
             else { // A < B
                 fwrite(&A, sizeof(Endereco), 1, saida);
                 fread(&A, sizeof(Endereco), 1, fileBlocoA);
+            }
         }
-        }
-
         //agora faremos a verificação 
         while(!feof(fileBlocoA)) {
             fwrite(&A, sizeof(Endereco), 1, saida);
@@ -153,10 +153,16 @@ int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNames
     }
     if(totalParBlocos != 1) {
         //substituindo os blocos pelos arquivos de saída para que possa ocorrer a próxima intercalação!
+        for(int w = 0; w < totalBlocos; w++) {
+            free(fileNamesBlocos[w]);
+        }
         free(fileNamesBlocos);
-        fileNamesBlocos = (char**) malloc(sizeof(fileNamesBlocoSaida));
+        fileNamesBlocos = (char**) malloc(sizeof(fileNamesBlocoSaida)); //sizeof(fileNamesBlocoSaida) retorna o tamanho do ponteiro e não da estrutura, logo, eu estou alocando uma memória de no máximo 8 bytes
         for(int x = 0; x < totalParBlocos; x++) {
+            //este código provavelmente sobrescreve a memória do heap, gerando um erro de bufferoverflow!
+            //aqui eu tento ir muito além de apenas 8 bytes de memória, o que justamente pode estar gerando este erro de bufferoverflow
             fileNamesBlocos[x] = fileNamesBlocoSaida[x]; //passando a referência de um para outro!
+            free(fileNamesBlocoSaida[x]);
         }
         free(fileNamesBlocoSaida); //liberando a memória que não será mais necessária...os blocos de saída serão redefinidos na próxima intercalação
     }
