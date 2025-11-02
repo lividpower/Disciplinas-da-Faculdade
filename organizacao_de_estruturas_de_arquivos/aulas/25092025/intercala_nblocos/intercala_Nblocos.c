@@ -157,10 +157,8 @@ int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNames
             free(fileNamesBlocos[w]);
         }
         free(fileNamesBlocos);
-        fileNamesBlocos = (char**) malloc(sizeof(fileNamesBlocoSaida)); //sizeof(fileNamesBlocoSaida) retorna o tamanho do ponteiro e não da estrutura, logo, eu estou alocando uma memória de no máximo 8 bytes
+        fileNamesBlocos = (char**) malloc(sizeof(totalParBlocos * sizeof(char*))); 
         for(int x = 0; x < totalParBlocos; x++) {
-            //este código provavelmente sobrescreve a memória do heap, gerando um erro de bufferoverflow!
-            //aqui eu tento ir muito além de apenas 8 bytes de memória, o que justamente pode estar gerando este erro de bufferoverflow
             fileNamesBlocos[x] = fileNamesBlocoSaida[x]; //passando a referência de um para outro!
             free(fileNamesBlocoSaida[x]);
         }
