@@ -108,14 +108,14 @@ int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNames
         //inicializando os nomes dos arquivos de saída
         //precisamos diferenciar os arquivos de saída de acordo com a quantidade de vezes que esta função for chamada, evitando a sobrescrita de arquivos! Daí utiliza-se de "cont"
         int required_size = snprintf(NULL, 0, "arquivo_saida%d_%d.dat", i, cont); 
-        fileNamesBlocoSaida[j] = (char*) malloc((required_size + 1) * sizeof(char)); //utilizo de j aqui porque apesar de eu 
+        fileNamesBlocoSaida[j] = (char*) malloc((required_size + 1) * sizeof(char)); //utilizo de j aqui para ir acessando os arquivos um a um
         snprintf(fileNamesBlocoSaida[j], (required_size + 1), "arquivo_saida%d_%d.dat", i, cont); //estou escrevendo na string 
         
         //intercalação dos blocos A e B
         //...
         FILE *fileBlocoA = fopen(fileNamesBlocos[i], "rb");
         FILE *fileBlocoB = fopen(fileNamesBlocos[i + 1], "rb");
-        FILE *saida = fopen(fileNamesBlocoSaida[i], "wb"); //criando um novo arquivo para conseguir intercalar os blocos A e B //estaremos sempre criando um arquivo diferente!
+        FILE *saida = fopen(fileNamesBlocoSaida[j], "wb"); //criando um novo arquivo para conseguir intercalar os blocos A e B //estaremos sempre criando um arquivo diferente!
 
         Endereco A, B; 
         //lendo o primeiro registro de cada um dos respectivos blocos
@@ -143,7 +143,6 @@ int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNames
             fwrite(&B, sizeof(Endereco), 1, saida);
             fread(&B, sizeof(Endereco), 1, fileBlocoB);
         }
-        printf("flag"); //o programa sequer está chegando aqui!
         //fim da intercalação
         fclose(saida);
         fclose(fileBlocoA);
@@ -159,13 +158,22 @@ int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNames
         free(fileNamesBlocos);
         fileNamesBlocos = (char**) malloc(sizeof(totalParBlocos * sizeof(char*))); 
         for(int x = 0; x < totalParBlocos; x++) {
-            fileNamesBlocos[x] = fileNamesBlocoSaida[x]; //passando a referência de um para outro!
-            free(fileNamesBlocoSaida[x]);
+            char *nomeBloco;
+            int tamanho = snprintf(NULL, 0, "bloco%d.dat", x + 1);
+            nomeBloco = (char*) malloc((tamanho + 1) * sizeof(char)); //devemos alocar memória suficiente para o nosso buffer que será passado para snprintf()
+            snprintf(nomeBloco, tamanho + 1, "bloco%d.dat", x + 1);
+            rename(fileNamesBlocoSaida[x], nomeBloco); //é necessário ter o arquivo fechado para conseguir renomeá-lo
+            fileNamesBlocos[x] = nomeBloco; //passando a referência de um para outro!
+            //o erro está aqui!!! devemos, na realidade, reconstruir o nome dos blocos de cada um dos blocos de saída!!!
+            free(fileNamesBlocoSaida[x]); //os antigos nomes dos arquivos de saída são liberados!
         }
         free(fileNamesBlocoSaida); //liberando a memória que não será mais necessária...os blocos de saída serão redefinidos na próxima intercalação
     }
     else {
         //o arquivo de saída já será o arquivo final!
+        for(int w = 0; w < totalBlocos; w++) {
+            free(fileNamesBlocos[w]);
+        }
         free(fileNamesBlocos); //já não precisaremos mais dos blocos anteriores!
         //não liberamos o fileNamesBlocoSaida porque precisaremos dele dentro da main!
     }
