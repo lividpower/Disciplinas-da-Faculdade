@@ -59,7 +59,7 @@ int compara(const void *registro_1, const void *registro_2) {
 
 void criaBlocos(double totalBlocos, long numRegistrosBloco, char **fileNamesBlocos) {
 
-    for(int i = 0; i < (totalBlocos / 2); i = i + 2) { //estaremos pulando de dois em dois!
+    for(int i = 0, j = 0; j < (totalBlocos / 2); i = i + 2, j = j + 1) { //estaremos pulando de dois em dois!
 
 
         //inicializando o nome dos arquivos para cada bloco
@@ -81,6 +81,7 @@ void criaBlocos(double totalBlocos, long numRegistrosBloco, char **fileNamesBloc
         qtd = fwrite(arrayEnderecos, sizeof(Endereco), numRegistrosBloco, fileBlocoA); //escrevendo os registros dentro de um bloco A
         assert(qtd == numRegistrosBloco);
         free(arrayEnderecos); //liberamos a memória do bloco, logo, este bloco já não está mais ocupando espaço na memória
+        fclose(fileBlocoA);
 
         //Bloco B
         arrayEnderecos = (Endereco*) malloc(numRegistrosBloco * sizeof(Endereco)); //malloc() retorna um void pointer
@@ -92,7 +93,6 @@ void criaBlocos(double totalBlocos, long numRegistrosBloco, char **fileNamesBloc
         qtd = fwrite(arrayEnderecos, sizeof(Endereco), numRegistrosBloco, fileBlocoB);
         assert(qtd == numRegistrosBloco);
         free(arrayEnderecos);
-        fclose(fileBlocoA);
         fclose(fileBlocoB);
     }
     return;
@@ -100,17 +100,16 @@ void criaBlocos(double totalBlocos, long numRegistrosBloco, char **fileNamesBloc
 
 int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNamesBlocoSaida, int cont) {
 
-    int i;
     double totalParBlocos = totalBlocos / 2;
     fileNamesBlocoSaida = (char**) malloc(totalParBlocos  * sizeof(char*));
 
-    for(i = 0; i < totalParBlocos; i = i + 2) {
+    for(int i = 0, j = 0; j < totalParBlocos; i = i + 2, j = j + 1) {
 
         //inicializando os nomes dos arquivos de saída
         //precisamos diferenciar os arquivos de saída de acordo com a quantidade de vezes que esta função for chamada, evitando a sobrescrita de arquivos! Daí utiliza-se de "cont"
         int required_size = snprintf(NULL, 0, "arquivo_saida%d_%d.dat", i, cont); 
-        fileNamesBlocoSaida[i] = (char*) malloc((required_size + 1) * sizeof(char)); 
-        snprintf(fileNamesBlocoSaida[i], (required_size + 1), "arquivo_saida%d_%d.dat", i, cont); //estou escrevendo na string 
+        fileNamesBlocoSaida[j] = (char*) malloc((required_size + 1) * sizeof(char)); //utilizo de j aqui porque apesar de eu 
+        snprintf(fileNamesBlocoSaida[j], (required_size + 1), "arquivo_saida%d_%d.dat", i, cont); //estou escrevendo na string 
         
         //intercalação dos blocos A e B
         //...
@@ -125,7 +124,7 @@ int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNames
         
         //lembrando que estamos ordenando o arquivo em ordem crescente!
         while(!feof(fileBlocoA) && !feof(fileBlocoB)) { //caso algum dos arquivos chegue ao fim, iremos sair do looping!
-            if(strncmp(A.cep, B.cep, 8) > 0) { // B < A
+            if(compara(&A,&B) > 0) { // B < A
                 fwrite(&B, sizeof(Endereco), 1, saida);
                 fread(&B, sizeof(Endereco), 1, fileBlocoB); //lendo o próximo registro do bloco B
             }
@@ -144,6 +143,7 @@ int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNames
             fwrite(&B, sizeof(Endereco), 1, saida);
             fread(&B, sizeof(Endereco), 1, fileBlocoB);
         }
+        printf("flag"); //o programa sequer está chegando aqui!
         //fim da intercalação
         fclose(saida);
         fclose(fileBlocoA);
