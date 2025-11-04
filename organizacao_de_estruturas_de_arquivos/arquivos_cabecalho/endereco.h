@@ -26,8 +26,8 @@ typedef struct _Indice {
 
 int compara(const void *i1, const void *i2);
 
-void criaBlocos(double totalBlocos, long numRegistrosBloco, char **fileNamesBlocos);
+void criaBlocos(double totalBlocos, long numRegistrosBloco, char ***fileNamesBlocos);
 
-int intercalaBlocos(double totalBlocos, char **fileNamesBlocos, char **fileNamesBlocoSaida, int cont);
+void intercalaBlocos(double totalBlocos, double *totalParBlocos, char ***fileNamesBlocos, char ***fileNamesBlocoSaida, int cont);
 
 #endif
