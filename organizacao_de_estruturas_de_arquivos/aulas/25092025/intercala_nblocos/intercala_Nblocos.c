@@ -12,7 +12,9 @@
 int main(int argc, char **argv) {
 
     char ***fileNamesBlocos = (char***) malloc(sizeof(char**));
+    assert(fileNamesBlocos != NULL);
     char ***fileNamesBlocoSaida = (char***) malloc(sizeof(char**)); //testarei passar estas variáveis por referência usando um char***
+    assert(fileNamesBlocoSaida != NULL);
     long n;
     n = 4;
     double totalBlocos = pow(2, n); //pow(2, n) = 2 * 2 * 2 * 2 * 2 ... (n vezes)
@@ -46,7 +48,7 @@ int main(int argc, char **argv) {
     //se totalBlocos == 1, o arquivo de saída já é o arquivo final
     //podemos parar com as intercalações!
     
-    int retorno = rename(*fileNamesBlocoSaida[0], "cep-ordenado.dat"); //alterando o nome do arquivo de saída
+    int retorno = rename((*fileNamesBlocoSaida)[0], "cep-ordenado.dat"); //alterando o nome do arquivo de saída
     assert(retorno == 0);
     return 0;
 }
@@ -66,11 +68,11 @@ void criaBlocos(double totalBlocos, long numRegistrosBloco, char ***fileNamesBlo
         //inicializando o nome dos arquivos para cada bloco
         int required_size1 = snprintf(NULL, 0, "bloco%d.dat", i + 1);
         int required_size2 = snprintf(NULL, 0, "bloco%d.dat", i + 2); //retorna o número de bytes necessários para escrever a string, excluindo o \0
-        *fileNamesBlocos[i] = (char*) malloc((required_size1 + 1) * sizeof(char));
-        *fileNamesBlocos[i + 1] = (char*) malloc((required_size2 + 1) * sizeof(char));
-        assert(*fileNamesBlocos[i] != NULL && *fileNamesBlocos[i + 1] != NULL);
-        snprintf(*fileNamesBlocos[i], (required_size1 + 1), "bloco%d.dat", i + 1); //estou escrevendo na string
-        snprintf(*fileNamesBlocos[i + 1], (required_size2 + 1), "bloco%d.dat", i + 2); 
+        (*fileNamesBlocos)[i] = (char*) malloc((required_size1 + 1) * sizeof(char));
+        (*fileNamesBlocos)[i + 1] = (char*) malloc((required_size2 + 1) * sizeof(char));
+        assert(((*fileNamesBlocos)[i] != NULL) && ((*fileNamesBlocos)[i + 1] != NULL)); // o operador [] tem prioriade superior ao operador *
+        snprintf((*fileNamesBlocos)[i], (required_size1 + 1), "bloco%d.dat", i + 1); //estou escrevendo na string
+        snprintf((*fileNamesBlocos)[i + 1], (required_size2 + 1), "bloco%d.dat", i + 2); 
         //se eu tentasse escrever com sprintf() e o meu buffer não tivesse tamanho necessário para escrita, ocorreria um buffer overflow!
 
         //Bloco A
@@ -78,7 +80,7 @@ void criaBlocos(double totalBlocos, long numRegistrosBloco, char ***fileNamesBlo
         int qtd = fread(arrayEnderecos, sizeof(Endereco), numRegistrosBloco, file_cep);
         assert(qtd == numRegistrosBloco);
         qsort(arrayEnderecos, numRegistrosBloco, sizeof(Endereco), compara); //ordenando os registros deste nosso array temporário
-        FILE *fileBlocoA = fopen(*fileNamesBlocos[i], "wb"); 
+        FILE *fileBlocoA = fopen((*fileNamesBlocos)[i], "wb"); 
         qtd = fwrite(arrayEnderecos, sizeof(Endereco), numRegistrosBloco, fileBlocoA); //escrevendo os registros dentro de um bloco A
         assert(qtd == numRegistrosBloco);
         free(arrayEnderecos); //liberamos a memória do bloco, logo, este bloco já não está mais ocupando espaço na memória
@@ -90,7 +92,7 @@ void criaBlocos(double totalBlocos, long numRegistrosBloco, char ***fileNamesBlo
         qtd = fread(arrayEnderecos, sizeof(Endereco), numRegistrosBloco, file_cep);
         assert(qtd == numRegistrosBloco);
         qsort(arrayEnderecos, numRegistrosBloco, sizeof(Endereco), compara);
-        FILE *fileBlocoB = fopen(*fileNamesBlocos[i + 1], "wb"); 
+        FILE *fileBlocoB = fopen((*fileNamesBlocos)[i + 1], "wb"); 
         qtd = fwrite(arrayEnderecos, sizeof(Endereco), numRegistrosBloco, fileBlocoB);
         assert(qtd == numRegistrosBloco);
         free(arrayEnderecos);
@@ -109,14 +111,14 @@ void intercalaBlocos(double totalBlocos, double *totalParBlocos, char ***fileNam
         //inicializando os nomes dos arquivos de saída
         //precisamos diferenciar os arquivos de saída de acordo com a quantidade de vezes que esta função for chamada, evitando a sobrescrita de arquivos! Daí utiliza-se de "cont"
         int required_size = snprintf(NULL, 0, "arquivo_saida%d_%d.dat", j + 1, cont); 
-        *fileNamesBlocoSaida[j] = (char*) malloc((required_size + 1) * sizeof(char)); //utilizo de j aqui para ir acessando os arquivos um a um
-        snprintf(*fileNamesBlocoSaida[j], (required_size + 1), "arquivo_saida%d_%d.dat", j + 1, cont); //estou escrevendo na string 
+        (*fileNamesBlocoSaida)[j] = (char*) malloc((required_size + 1) * sizeof(char)); //utilizo de j aqui para ir acessando os arquivos um a um
+        snprintf((*fileNamesBlocoSaida)[j], (required_size + 1), "arquivo_saida%d_%d.dat", j + 1, cont); //estou escrevendo na string 
         
         //intercalação dos blocos A e B
         //...
-        FILE *fileBlocoA = fopen(*fileNamesBlocos[i], "rb");
-        FILE *fileBlocoB = fopen(*fileNamesBlocos[i + 1], "rb");
-        FILE *saida = fopen(*fileNamesBlocoSaida[j], "wb"); //criando um novo arquivo para conseguir intercalar os blocos A e B //estaremos sempre criando um arquivo diferente!
+        FILE *fileBlocoA = fopen((*fileNamesBlocos)[i], "rb");
+        FILE *fileBlocoB = fopen((*fileNamesBlocos)[i + 1], "rb");
+        FILE *saida = fopen((*fileNamesBlocoSaida)[j], "wb"); //criando um novo arquivo para conseguir intercalar os blocos A e B //estaremos sempre criando um arquivo diferente!
 
         Endereco A, B; //estas variáveis são reinicializadas para cada looping
         //lendo o primeiro registro de cada um dos respectivos blocos
@@ -149,14 +151,15 @@ void intercalaBlocos(double totalBlocos, double *totalParBlocos, char ***fileNam
         //fim da intercalação
         fclose(saida);
         fclose(fileBlocoA);
-        remove(*fileNamesBlocos[i]); //é necessário passar o nome do arquivo!
+        remove((*fileNamesBlocos)[i]); //é necessário passar o nome do arquivo!
         fclose(fileBlocoB);
-        remove(*fileNamesBlocos[i + 1]); //exclui o arquivo do diretório caso não exista mais nenhuma referência a este arquivo dentre os processos existentes...
+        remove((*fileNamesBlocos)[i + 1]); //exclui o arquivo do diretório caso não exista mais nenhuma referência a este arquivo dentre os processos existentes...
     }
     if((*totalParBlocos) != 1) {
         //substituindo os blocos pelos arquivos de saída para que possa ocorrer a próxima intercalação!
         for(int w = 0; w < totalBlocos; w++) {
-            free(*fileNamesBlocos[w]);
+            free((*fileNamesBlocos)[w]);
+            (*fileNamesBlocos)[w] = NULL;
         }
         free(*fileNamesBlocos);
         *fileNamesBlocos = (char**) malloc(sizeof((*totalParBlocos) * sizeof(char*))); 
@@ -165,18 +168,23 @@ void intercalaBlocos(double totalBlocos, double *totalParBlocos, char ***fileNam
             int tamanho = snprintf(NULL, 0, "bloco%d.dat", x + 1);
             nomeBloco = (char*) malloc((tamanho + 1) * sizeof(char)); //devemos alocar memória suficiente para o nosso buffer que será passado para snprintf()
             snprintf(nomeBloco, tamanho + 1, "bloco%d.dat", x + 1);
-            rename(*fileNamesBlocoSaida[x], nomeBloco); //é necessário ter o arquivo fechado para conseguir renomeá-lo
-            *fileNamesBlocos[x] = nomeBloco; //passando a referência de um para outro!
-            free(*fileNamesBlocoSaida[x]); //os antigos nomes dos arquivos de saída são liberados!
+            rename((*fileNamesBlocoSaida)[x], nomeBloco); //é necessário ter o arquivo fechado para conseguir renomeá-lo
+            (*fileNamesBlocos)[x] = nomeBloco; //passando a referência de um para outro!
+            free((*fileNamesBlocoSaida)[x]); //os antigos nomes dos arquivos de saída são liberados!
+            (*fileNamesBlocoSaida)[x] = NULL;
         }
         free(*fileNamesBlocoSaida); //liberando a memória que não será mais necessária...os blocos de saída serão redefinidos na próxima intercalação
+        *fileNamesBlocoSaida = NULL;
     }
     else {
         //o arquivo de saída já será o arquivo final!
         for(int w = 0; w < totalBlocos; w++) {
-            free(*fileNamesBlocos[w]);
+            free((*fileNamesBlocos)[w]);
+            (*fileNamesBlocos)[w] = NULL;
         }
-        free(*fileNamesBlocos); //já não precisaremos mais dos blocos anteriores!
+        free(*fileNamesBlocos); 
+        *fileNamesBlocos = NULL; //forma de evitar a tentativa de acesso a endereços inválidos!!!
+        //já não precisaremos mais dos blocos anteriores!
         //não liberamos o fileNamesBlocoSaida porque precisaremos dele dentro da main!
     }
     return; //iremos retornar quantos blocos de saída nós produzimos durante esta função!
