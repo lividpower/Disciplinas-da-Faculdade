@@ -7,7 +7,6 @@
 #include <assert.h>
 //Para compilar -> gcc -I ../../../arquivos_cabecalho/ -g -o intercala intercala_Nblocos.c 
 
-//FIXME: Necessário verificar a questão de liberação de memória para os arrays fileName
 
 int main(int argc, char **argv) {
 
@@ -15,8 +14,7 @@ int main(int argc, char **argv) {
     assert(fileNamesBlocos != NULL);
     char ***fileNamesBlocoSaida = (char***) malloc(sizeof(char**)); //testarei passar estas variáveis por referência usando um char***
     assert(fileNamesBlocoSaida != NULL);
-    long n;
-    n = 4;
+    long n = 10;
     double totalBlocos = pow(2, n); //pow(2, n) = 2 * 2 * 2 * 2 * 2 ... (n vezes)
 
     //alocando memória para meu vetor de strings
@@ -48,8 +46,28 @@ int main(int argc, char **argv) {
     //se totalBlocos == 1, o arquivo de saída já é o arquivo final
     //podemos parar com as intercalações!
     
-    int retorno = rename((*fileNamesBlocoSaida)[0], "cep-ordenado.dat"); //alterando o nome do arquivo de saída
+    int retorno = rename((*fileNamesBlocoSaida)[0], "cep-intercala.dat"); //alterando o nome do arquivo de saída
+    //apenas irá sobrar o arquivo "cep-ordenado.dat" ao final, enquanto todos os outros arquivos de blocos terão sido excluídos!
     assert(retorno == 0);
+
+    //antes de finalizar nossa execução, irei pegar o arquivo "cep_ordenado.dat" que eu tenho já certeza de que está ordenado e irei fazer a verificação para entender se todo esse meu processo de ordenação e intercalação realmente funciona!
+    FILE *arquivoOrdenado = fopen("cep-ordenado.dat", "rb"); //arquivo já ordenado, o qual foi fornecido pelo professor Renato
+    FILE *novoArquivo = fopen("cep-intercala.dat", "rb"); //arquivo que eu mesmo gerei por meio da intercalação
+    fseek(arquivoOrdenado, 0, SEEK_END);
+    long index = ftell(arquivoOrdenado) / sizeof(Endereco);
+    rewind(arquivoOrdenado);
+    for(int i = 0; i < index; i++) { //verificando se a ordem de cada estrutura é igual para ambos os arquivos!
+        Endereco buffer1, buffer2;
+        fread(&buffer1, sizeof(Endereco), 1, arquivoOrdenado);
+        fread(&buffer2, sizeof(Endereco), 1, novoArquivo);
+        if(compara(&buffer1, &buffer2) != 0) { //a ordenação dos ceps deveria ser igual!
+            fprintf(stderr, "Falha na ordenação do arquivo\n");
+            return 1;
+        }
+    }
+    printf("A ordenação foi realizada com sucesso!\n");
+    fclose(arquivoOrdenado);
+    fclose(novoArquivo);
     return 0;
 }
 
@@ -122,9 +140,7 @@ void intercalaBlocos(double totalBlocos, double *totalParBlocos, char ***fileNam
 
         Endereco A, B; //estas variáveis são reinicializadas para cada looping
         //lendo o primeiro registro de cada um dos respectivos blocos
-        printf("flag\n");
-        int retorno = fread(&A, sizeof(Endereco), 1, fileBlocoA);
-        printf("%d\n", retorno);
+        fread(&A, sizeof(Endereco), 1, fileBlocoA);
         fread(&B, sizeof(Endereco), 1, fileBlocoB);
         
         //lembrando que estamos ordenando o arquivo em ordem crescente!
@@ -162,14 +178,14 @@ void intercalaBlocos(double totalBlocos, double *totalParBlocos, char ***fileNam
             (*fileNamesBlocos)[w] = NULL;
         }
         free(*fileNamesBlocos);
-        *fileNamesBlocos = (char**) malloc(sizeof((*totalParBlocos) * sizeof(char*))); 
+        *fileNamesBlocos = (char**) malloc((*totalParBlocos) * sizeof(char*)); 
         for(int x = 0; x < (*totalParBlocos); x++) {
             char *nomeBloco;
             int tamanho = snprintf(NULL, 0, "bloco%d.dat", x + 1);
             nomeBloco = (char*) malloc((tamanho + 1) * sizeof(char)); //devemos alocar memória suficiente para o nosso buffer que será passado para snprintf()
             snprintf(nomeBloco, tamanho + 1, "bloco%d.dat", x + 1);
             rename((*fileNamesBlocoSaida)[x], nomeBloco); //é necessário ter o arquivo fechado para conseguir renomeá-lo
-            (*fileNamesBlocos)[x] = nomeBloco; //passando a referência de um para outro!
+            (*fileNamesBlocos)[x] = nomeBloco; //passando a referência de um para outro! 
             free((*fileNamesBlocoSaida)[x]); //os antigos nomes dos arquivos de saída são liberados!
             (*fileNamesBlocoSaida)[x] = NULL;
         }
