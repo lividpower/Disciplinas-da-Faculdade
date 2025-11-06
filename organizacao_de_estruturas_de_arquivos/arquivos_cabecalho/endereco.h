@@ -8,7 +8,8 @@
 FILE *file_indices, *file_cep;
 
 typedef struct _Endereco
-{	//todos esses caracteres juntos formam uma linha com 300 caracteres, justamente igual ao padrão presente dentro do arquivo cep.dat
+{
+	//esses caracteres juntos formam uma linha com 300 caracteres, justamente igual ao padrão presente dentro do arquivo cep.dat
 	//mas e os caracteres nulos? neste arquivo, não temos caracteres nulos! devemos tomar cuidado com isso ao manipular esses vetores de caractere
 	char logradouro[72]; 
 	char bairro[72];
@@ -24,10 +25,24 @@ typedef struct _Indice {
 	char cep[8]; 
 } Indice;
 
+typedef struct IndiceMultinivel {
+	long indexBlocoIndice;
+	long posicaoRegistro; //posição em bytes
+	char cep[8];
+} IndiceMulti;
+
+
 int compara(const void *i1, const void *i2);
 
 void criaBlocos(double totalBlocos, long numRegistrosBloco, char ***fileNamesBlocos);
 
 void intercalaBlocos(double totalBlocos, double *totalParBlocos, char ***fileNamesBlocos, char ***fileNamesBlocoSaida, int cont);
+
+long buscaSequencialIndice(int *qtd, char *cep, long num_indices);
+long buscaBinariaIndice(int *qtd, char *cep, long num_indices);
+
+int buscaSequencialIndiceMulti(int *qtd, char *cep, IndiceMulti *buffer, int indexBloco, long numIndicesBloco);
+int buscaBlocoIndiceMulti(int *qtd, char *cep, long numIndicesBloco, long numBlocos, IndiceMulti *buffer);
+int buscaBinariaIndiceMulti(int *qtd, char *cep, IndiceMulti *buffer, int indexBloco, long numIndicesBloco);
 
 #endif
