@@ -2,6 +2,7 @@
 #include <endereco.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 //Para compilar -> gcc -I/home/mathe/Cefet-RJ/Disciplinas_da_Faculdade/organizacao_de_estruturas_de_arquivos/arquivos_cabecalho -g -o consulta consulta_registro.c
 
 
@@ -53,7 +54,7 @@ int buscaBinariaIndiceMulti(int *qtd, char *cep, IndiceMulti *buffer, int indexB
 
 }
 
-int buscaBlocoIndiceMulti(int *qtd, char *cep, long numIndicesBloco, long numBlocos, IndiceMulti *buffer) {
+int buscaSequencialBlocoIndiceMulti(int *qtd, char *cep, long numIndicesBloco, long numBlocos, IndiceMulti *buffer) {
     for(int i = 0; i < numBlocos; i++) {
         fseek(file_indices, ((numIndicesBloco - 1) + (i * numIndicesBloco)) * sizeof(IndiceMulti), SEEK_SET); //preparando o cursor para a leitura do último índice de cada bloco
         *qtd += fread(buffer, sizeof(IndiceMulti), 1, file_indices); 
@@ -70,6 +71,40 @@ int buscaBlocoIndiceMulti(int *qtd, char *cep, long numIndicesBloco, long numBlo
         }
     }
     return -2; //o CEP não está contido em nenhum dos blocos
+}
+
+int buscaBinariaBlocoIndiceMulti(int *qtd, char *cep, long numIndicesBloco, long numBlocos, IndiceMulti *buffer) {
+    long inicio, meio, fim;
+    inicio = 0;
+    fim = numBlocos - 1;
+    meio = (inicio + fim) / 2; //irá nos indicar o index do bloco que deveremos retornar para a função principal
+    int i = 0;
+    fseek(file_indices, ((numIndicesBloco - 1) + (meio * numIndicesBloco)) * sizeof(IndiceMulti), SEEK_SET);
+    fread(buffer, sizeof(IndiceMulti), 1, file_indices);
+    double numDivisoes = log2(numBlocos); //analisando o pior caso da busca binária
+    while(i < numBlocos) {
+        i++; //se i >= numBlocos, já teremos buscado em todos os blocos, logo, será um indício de que o cep que buscamos não consta no arquivo
+
+        if(strncmp(buffer->cep, cep, 8) == 0) {
+            return -1; //já teremos passado o índice que aponta para o registro por meio do buffer que foi passado por referência para esta função
+        }
+        else if(strncmp(buffer->cep, cep, 8) > 0) {
+            fim = meio - 1;
+            meio = (inicio + fim) / 2;
+            if(i > numDivisoes) { //estamos garantindo o retorno de meio após a última divisão da busca binária, a qual era para já retornar uma resposta!
+                return meio;
+            }
+        }
+        else if(strncmp(buffer->cep, cep, 8) < 0) {
+            inicio = meio + 1;
+            meio = (inicio + fim) / 2;
+            //se continuar dando sempre maior, significa que o CEP que estamos buscando não estaria em nenhum bloco...
+        }
+        fseek(file_indices, ((numIndicesBloco - 1) + (meio * numIndicesBloco)) * sizeof(IndiceMulti), SEEK_SET); //a leitura será feita para cada último elemento de cada bloco
+        fread(buffer, sizeof(IndiceMulti), 1, file_indices);
+
+    }
+    return -2;
 }
 
 
@@ -96,8 +131,9 @@ int main(int argc, char **argv) {
         int qtd_bytes = 0;
         
         rewind(file_indices); //voltando com o cursor para o início do arquivo e resetando as flags de 
-        int retorno = buscaBlocoIndiceMulti(&qtd_bytes, argv[1], numIndicesBloco, numBlocos, &bufferIndice);
-        int teste;
+        //int retorno = buscaSequencialBlocoIndiceMulti(&qtd_bytes, argv[1], numIndicesBloco, numBlocos, &bufferIndice);
+        int retorno = buscaBinariaBlocoIndiceMulti(&qtd_bytes, argv[1], numIndicesBloco, numBlocos, &bufferIndice);
+        int teste = -1; //este valor será alterado dentro desta próxima estrutura condicional if, caso entre nela
         if(retorno >= 0) { //caso retorno == -1, já teremos encontrado o índice do CEP!
             //encontramos o bloco do respectivo índice que contém o CEP que foi passado como argumento
             //devemos então realizar a busca por este índice!
@@ -106,7 +142,7 @@ int main(int argc, char **argv) {
             teste = buscaBinariaIndiceMulti(&qtd_bytes, argv[1], &bufferIndice, indexBloco, numIndicesBloco);
         }
 
-        if(retorno != -2 && teste != -1) { //se retorno == -2, temos que o CEP não foi encontrado no arquivo de índices
+        if(retorno != -2 || teste != -1) { //se retorno == -2, temos que o CEP não foi encontrado no arquivo de índices
             printf("Total de bytes lido durante a busca pelo cep: %ld\n\n", qtd_bytes * sizeof(IndiceMulti)); //esta operação retorna um long, logo, é necessário usar de %ld
 
             //após termos encontrado a posição do cep dentro do arquivo original, agora sim podemos realizar a leitura do registro referente ao respectivo cep!

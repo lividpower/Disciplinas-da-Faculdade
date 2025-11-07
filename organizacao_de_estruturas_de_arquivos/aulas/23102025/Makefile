@@ -1,5 +1,6 @@
 # Define as flags de compilação comuns
-CFLAGS = -g -Wall 
+CFLAGS1 = -g -Wall 
+CFLAGS2 = -g -Wall -lm
 CC = gcc
 
 # Define os diretórios de inclusão (seu -I)
@@ -18,11 +19,11 @@ all: $(TARGET1) $(TARGET2)
 
 # Regra para construir o primeiro executável
 $(TARGET1): $(SOURCE1)
-	$(CC) $(CFLAGS) $(INCLUDES)  $^ -o $@ 
+	$(CC) $(CFLAGS1) $(INCLUDES)  $^ -o $@ 
     
 # Regra para construir o segundo executável
 $(TARGET2): $(SOURCE2)
-	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ 
+	$(CC) $(INCLUDES) $^ -o $@ $(CFLAGS2)
 
 # Regra para limpar os arquivos gerados
 .PHONY: clean
