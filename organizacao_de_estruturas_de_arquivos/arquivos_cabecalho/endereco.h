@@ -35,14 +35,14 @@ typedef struct IndiceMultinivel {
 int compara(const void *i1, const void *i2);
 
 void criaBlocos(double totalBlocos, long numRegistrosBloco, char ***fileNamesBlocos);
-
 void intercalaBlocos(double totalBlocos, double *totalParBlocos, char ***fileNamesBlocos, char ***fileNamesBlocoSaida, int cont);
 
 long buscaSequencialIndice(int *qtd, char *cep, long num_indices);
 long buscaBinariaIndice(int *qtd, char *cep, long num_indices);
 
 int buscaSequencialIndiceMulti(int *qtd, char *cep, IndiceMulti *buffer, int indexBloco, long numIndicesBloco);
-int buscaBlocoIndiceMulti(int *qtd, char *cep, long numIndicesBloco, long numBlocos, IndiceMulti *buffer);
 int buscaBinariaIndiceMulti(int *qtd, char *cep, IndiceMulti *buffer, int indexBloco, long numIndicesBloco);
+int buscaSequencialBlocoIndiceMulti(int *qtd, char *cep, long numIndicesBloco, long numBlocos, IndiceMulti *buffer);
+int buscaBinariaBlocoIndiceMulti(int *qtd, char *cep, long numIndicesBloco, long numBlocos, IndiceMulti *buffer);
 
 #endif
