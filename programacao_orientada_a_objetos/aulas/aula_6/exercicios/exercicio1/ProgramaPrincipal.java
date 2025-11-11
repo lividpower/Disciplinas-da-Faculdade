@@ -21,29 +21,45 @@ public class ProgramaPrincipal {
         return arrayFuncionarios;
     }
 
-    public static String[] leArquivoInput() throws IOException {
+    public static String[] leArquivoInput() {
+        
+        //inicializando o array
+        String arrayFuncionarios[] = new String[INPUTS]; //se o número de inputs fosse desconhecido, teríamos um tratamento diferente
+        for(int i = 0; i < arrayFuncionarios.length; i++) {
+            arrayFuncionarios[i] = ""; //irei incrementar estas strings posteriormente no código!
+        }
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Digite o nome do arquivo de input: ");
-        String fileName = scanner.nextLine();
+        String fileName = scanner.nextLine(); //deve-se passar o caminho relativo de acordo com o diretório que eu estiver acessando o arquivo (neste caso, o caminho é: "exercicios/exercicio1/inputUsuario.txt")
         //estamos criando uma referência para o arquivo!
         try(InputStreamReader fileStream = new FileReader(fileName)) { //try-with-resources
             int caractereLido; //não podemos simplesmente definir o tipo int dentro de uma estrutura try-with-resources, apenas podemos definir estruturas AutoClosabl
-            caractereLido = fileStream.read() //eu achei que seria necessário colocar esta estrutura dentro de um outro try-catch, mas, como já estamos dentro de uma estrutura try-with-resources, qualquer Exception já será capturada automaticamente!
-
-
-            // fileStream.close() is called AUTOMATICALLY.
+            caractereLido = fileStream.read(); //eu achei que seria necessário colocar esta estrutura dentro de um outro try-catch, mas, como já estamos dentro de uma estrutura try-with-resources, qualquer Exception já será capturada automaticamente!
+            //caractereLido armazena o valor ASCII, por padrão, do determinado caractere!
+            int cont = 0; //número de inputs presente dentro do arquivo
+            while(caractereLido != -1 && cont < 5) { //se caractereLido == -1, chegamos ao fim do arquivo!
+                if(caractereLido != '\n') { //verificando se o caractere lido equivale ao caractere \n
+                    arrayFuncionarios[cont] += ((char) caractereLido); 
+                }
+                else {
+                    cont++; //pulando para a próxima linha de input após a leitura de um caractere \n
+                }
+                caractereLido = fileStream.read();
+            }
+            return arrayFuncionarios;
+            //fileStream.close() is called AUTOMATICALLY.
             //a estrutura try-with-resources fecha automaticamente o arquivo após este bloco de código ser finalizado!
         } 
         catch(IOException error) {
             // This ONE catch block handles ALL I/O errors:
-            // - Error opening the file (e.g., FileNotFoundException)
+            // - Error opening the file (e.g., FileNotFoundException) -> FileNotFoundException herda a classe IOException
             // - Error reading the file
             // - Error closing the file
             System.err.println("Erro durante a operação com o arquivo: " + error.getMessage());
-            System.exit(1); //finaliza a execução de todo o programa, retornando um código de erro!
+            return null;
         }
-
-
+    }
 
     public static void main(String args[]) { 
 
