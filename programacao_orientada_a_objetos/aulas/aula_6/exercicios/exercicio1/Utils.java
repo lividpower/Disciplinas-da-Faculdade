@@ -2,6 +2,8 @@ package exercicios.exercicio1;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 
 public class Utils {
 
@@ -34,5 +36,26 @@ public class Utils {
         }
         return arrayDados;
     }
-    
+
+    public static HashMap calculaMediaSalarialFuncionarios(List arrayDados) {
+
+        HashMap MediaSalarial = new HashMap();
+        double somaA = 0, somaP = 0;
+        int contA = 0, contP = 0;
+        for(int i = 0; i < arrayDados.size(); i++) {
+            Funcionario aux = (Funcionario) arrayDados.get(i);
+            if(aux instanceof AnalistaSistemas) {
+                somaA += aux.getSalario();
+                contA++;
+            }
+            else if(aux instanceof Programador) {
+                somaP += aux.getSalario();
+                contP++;
+            }
+        }
+        MediaSalarial.putIfAbsent("AnalistaSistemas", (somaA /  contA));
+        MediaSalarial.putIfAbsent("Programador", (somaP / contP));
+        return MediaSalarial;
+    }
+        
 }

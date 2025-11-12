@@ -5,6 +5,9 @@ import java.util.List;
 import java.io.InputStreamReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Iterator;
 
 public class ProgramaPrincipal {
 
@@ -70,6 +73,19 @@ public class ProgramaPrincipal {
         for(int i = 0; i < instances.size(); i++) {
             Object aux = instances.get(i); //.get() retorna um Object, caso o tipo genérico não tenha sido passado previamente para a classe List
             System.out.println((Funcionario) aux);
+        }
+
+        HashMap MediaSalarial = Utils.calculaMediaSalarialFuncionarios(instances);
+        Set keys = MediaSalarial.keySet(); 
+        Iterator iterator = keys.iterator(); //estamos percorrendo o conjunto de chaves, as quais são do tipo String
+        while(iterator.hasNext()) {
+            String tipoFuncionario = (String) iterator.next(); //iterator.next() estaria retornando um Object, posto que não definimos o tipo genérico da classe Iterator
+            if((tipoFuncionario).equals("AnalistaSistemas")) { 
+                System.out.println("Média salarial dos Analistas de Sistema: " + MediaSalarial.get(tipoFuncionario));
+            }
+            else if((tipoFuncionario).equals("Programador")){
+                System.out.println("Média salarial dos Programadores: " + MediaSalarial.get(tipoFuncionario));
+            }
         }
     }
 }

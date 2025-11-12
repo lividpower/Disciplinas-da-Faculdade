@@ -14,6 +14,10 @@ public abstract class Funcionario {
         return this.id;
     }   
 
+    public double getSalario() {
+        return this.salario;
+    }
+
     public void setID(String id) {
         this.id = id;
     }
