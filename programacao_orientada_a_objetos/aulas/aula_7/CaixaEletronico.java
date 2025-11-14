@@ -7,8 +7,13 @@ public class CaixaEletronico {
         Scanner sc = new Scanner(System.in);
         System.out.println("Quando quer sacar?");
         double v = sc.nextInt();
-        m.debitar(v);
-        System.out.println("Liberando notas de dinheiro. Total: " + v + " reais");
+        try{
+            m.debitar(v);
+            System.out.println("Liberando notas de dinheiro. Total: " + v + " reais");
+        } catch(RuntimeException e) {
+            System.out.println("Saldo insuficiente");
+            System.err.println(e);
+        }
 
         System.out.println("fim");
     }
