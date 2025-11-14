@@ -10,11 +10,9 @@ public class CaixaEletronico {
         try{
             m.debitar(v);
             System.out.println("Liberando notas de dinheiro. Total: " + v + " reais");
-        } catch(RuntimeException e) {
-            System.out.println("Saldo insuficiente");
+        }catch(SenDinException e) {
             System.err.println(e);
         }
-
         System.out.println("fim");
     }
 }
