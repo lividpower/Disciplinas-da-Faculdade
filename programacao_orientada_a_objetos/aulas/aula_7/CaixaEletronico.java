@@ -7,9 +7,8 @@ public class CaixaEletronico {
         Scanner sc = new Scanner(System.in);
         System.out.println("Quando quer sacar?");
         double v = sc.nextInt();
-        if(m.debitar(v)) {
-            System.out.println("Liberando notas de dinheiro. Total: " + v + " reais");
-        }
+        m.debitar(v);
+        System.out.println("Liberando notas de dinheiro. Total: " + v + " reais");
 
         System.out.println("fim");
     }

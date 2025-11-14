@@ -1,13 +1,14 @@
+
+//import java.lang.RuntimeException; //java.lang já é importado por padrão
 public class Conta {
     private double saldo;
-    public boolean debitar(double val) {
+    public void debitar(double val) {
         if(val > saldo) {
             System.out.println("não tem saldo");
-            return false;
+            throw new RuntimeException();
         }
         else {
             saldo -= val;
-            return true;
         }
     }
     
